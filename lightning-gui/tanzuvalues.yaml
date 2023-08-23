@@ -8,49 +8,26 @@
 name : lightning-gui
 namespace : zetaris
 replicas : 1
-deploymentname: zetaris
-dnsdomain: tanzu.lab
+deploymentname: #{deploymentname}# #name of the app, URL will be ui.deploymentname.dnsdomain
+dnsdomain: #{dnsdomain}#
 clusterissuer: local-ca-issuer
 
 gui:
   image : zetregistry.azurecr.io/lightning-gui:main-2.3.2.0-83e9c327e2361b34399554fec875a8e9048dbd54
-  
-configmap:
-  general: lightning-general-config
-  gui: lightning-gui-config
 
 ndp: 
-  secret : lightning-server-secret
   username : admin@default.com
   password : 9Ly3@UBmo8Nw
+  secret : lightning-server-secret
 
 secret:
-  gui: lightning-gui-secret
-  ssosaml: lightning-gui-sso-saml2-secret
-  ssoenv : lightning-gui-sso-env-secret
-  passwordenv : lightning-password-security-env-secret
   acrauth : acrcred
-
-volumes:
-  customerdata : datafabricguicustdata
-  config : lightning-gui-conf-volume
 
 claims:
   data: external-nfs-pvc
 
-service:
-  gui : lightning-gui-svc
- 
-
-api_service:
-  internal_rest_service_url: http://lightning-api-svc:8888
-  api_external_url: https://api.zetaris.tanzu.lab
-  lightning_server_url: jdbc:zetaris:lightning@lightning-server-svc:10000
-
 filesystem_staging: /home/zetaris/customer-data
-calendly_url: https://calendly.com/qanotify/qa-test
-airflow:
-  airflow_url: https://airflow.zetaris.tanzu.lab/home
+calendly_url: https://calendly.com/d/x4w-yk4-q8b/zetaris-customer-success-touchpoint
 
 enable_hubspot_tracking: false
-show_build_hash: true
+show_build_hash: false

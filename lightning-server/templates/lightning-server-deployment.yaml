@@ -46,7 +46,7 @@ spec:
       - configMapRef:
           name: lightning-general-config
     labels:
-      version: {{ .Values.deployment.version }}
+      version: {{ .Values.deployment.sparkversion }}
       app: lightning-server
     serviceAccount: {{ .Values.serviceaccount.name }}
     podSecurityContext:
@@ -70,7 +70,7 @@ spec:
       - configMapRef:
           name: lightning-general-config
     labels:
-      version: {{ .Values.deployment.version }}
+      version: {{ .Values.deployment.sparkversion }}
       app: lightning-executor
     podSecurityContext:
       fsGroup: 1001

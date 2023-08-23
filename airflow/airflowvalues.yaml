@@ -14,7 +14,7 @@ webserverSecretKey: f961bb0c18fb0fc56297e97558e9c238
 images:
   airflow:
    repository: zetaris/airflow
-   tag: v0.9
+   tag: v1.0
 
 scheduler:
   resources:
@@ -33,31 +33,32 @@ dags:
 
 env:
   - name: "AIRFLOW_VAR_JDBC_IP"
-    value: "172.16.49.80"
+    value: "#{jdbcip}#"
   - name: "AIRFLOW_VAR_LIGHTNING_USER"
-    value: "dev@account.com"
+    value: "#{LIGHTNING_USER}#"
   - name: "AIRFLOW_VAR_LIGHTNING_PASSWORD"
-    value: "password"
+    value: "#{LIGHTNING_PASSWORD}#"
   - name: "AIRFLOW_VAR_LIGHTNING_API_URL"
-    value: "https://api.zetaris.tanzu.lab"
+    value: "https://api.#{customername}#.app.zetaris.com"
   - name: "AIRFLOW_VAR_AIRFLOW_URL"
-    value: "https://airflow.zetaris.tanzu.lab"
+    value: "https://airflow.#{customername}#.app.zetaris.com"
   - name: "AIRFLOW_VAR_DAGS_DIR"
     value: "/opt/airflow/dagsdir/"
   - name: AIRFLOW__SMTP__SMTP_HOST
-    value: "smtp.office365.com"
+    value: "#{smtp}#"
   - name: AIRFLOW__SMTP__SMTP_SSL
-    value: "False"
+    value: "#{smtpssl}#"
   - name: AIRFLOW__SMTP__SMTP_STARTTLS
     value: "True"
   - name: AIRFLOW__SMTP__SMTP_USER
-    value: "notifications@zetaris.com"
+    value: "#{senderemail}#"
   - name: AIRFLOW__SMTP__SMTP_PASSWORD
-    value: "M@573r(1)#"
+    value: "#{senderpassword}#"
   - name: AIRFLOW__SMTP__SMTP_PORT
     value: "587"
   - name: AIRFLOW__SMTP__SMTP_MAIL_FROM
-    value: "notifications@zetaris.com"
+    value: "#{senderemail}#"
+
 
 registry:
   secretName: dockerhubcred

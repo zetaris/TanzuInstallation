@@ -27,7 +27,7 @@ spec:
             - name: AUDIT_LOG_DATABASE_URL
               value: {{ .Values.db.AUDIT_LOG_DATABASE_URL }}
             - name: LIGHTNING_SERVER_URL
-              value: {{ .Values.server.lightning_server_url }}
+              value: jdbc:zetaris:lightning@lightning-server-svc:10000
             - name: LIGHTNING_API_DEPLOY_MODE
               value: {{ .Values.api.lightning_api_deploy_mode }}
             - name: ENCRYPTION_LOCAL_PRIVATE_KEY_PATH
@@ -41,7 +41,7 @@ spec:
               mountPath: /home/zetaris/lightning/password-security
               readOnly: true
             - mountPath: /home/zetaris/customer-data
-              name: {{ .Values.volumes.customerdata }}
+              name: lightning-customer-data-volume
   
       imagePullSecrets:
         - name: {{ .Values.secret.acrauth }}
@@ -50,6 +50,6 @@ spec:
           secret:
             defaultMode: 0606
             secretName: api-password-security-encryption-secret
-        - name: {{ .Values.volumes.customerdata }}
+        - name: lightning-customer-data-volume
           persistentVolumeClaim:
             claimName: {{ .Values.claims.data }}

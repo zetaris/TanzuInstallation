@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.configmap.general }}
+  name: lightning-general-config
   namespace: {{ .Values.namespace }}
 data:
   login_duration_in_minutes: "10"

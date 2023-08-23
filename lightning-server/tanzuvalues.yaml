@@ -9,9 +9,8 @@ lightning_home: /home/zetaris
 
 deployment:
   name : lightning-server
-  version: 3.3.2
+  sparkversion: 3.3.2
   image : zetregistry.azurecr.io/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
- 
 app_version: 2.3.3.0
 
 driver:
@@ -20,31 +19,12 @@ driver:
   memory: 8g
   coreLimit: 4500m
 
-claims:
-  name: data-pvc
-
-storageclass:
-  name: default
-
-persistentvolume:
-  name: data-pv
-
-configmap:
-  general: lightning-general-config
-  server: lightning-server-config
-
 secret:
-  passwordenv : lightning-password-security-env-secret
   acrauth : acrcred
-
-csi: csi.vshpere.vmware.com
   
 serviceaccount :
   name : zetaris-sa
   role : edit
-
-volumes :
-  configmap: lightning-server-conf-volume
 
 executor :
   name : lightning-exec
@@ -55,10 +35,10 @@ executor :
   minExecutors: 2
 
 postgres:
-  METASTORE_JDBC_URL: jdbc:postgresql://172.16.49.61:5432/metastore?sslmode=require
-  AUDIT_LOG_JDBC_URL: jdbc:postgresql://172.16.49.61:5432/audit_log?sslmode=require
+  METASTORE_JDBC_URL: jdbc:postgresql://#{PostgresIP}#:5432/metastore?sslmode=require
+  AUDIT_LOG_JDBC_URL: jdbc:postgresql://#{PostgresIP}#:5432/audit_log?sslmode=require
   JDBC_DRIVER_CLASS: org.postgresql.Driver
   HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
-  DB_USERNAME: lightning
-  DB_PASSWORD: Zetaris100PGPASS
+  DB_USERNAME: #{DB_USERNAME}#
+  DB_PASSWORD: #{DB_PASSWORD}#
 

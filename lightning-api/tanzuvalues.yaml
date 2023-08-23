@@ -6,8 +6,8 @@
 name : lightning-api
 namespace : zetaris
 replicas : 1
-deploymentname: zetaris
-dnsdomain: tanzu.lab
+deploymentname: #{deploymentname}#
+dnsdomain: #{dnsdomain}#
 clusterissuer: local-ca-issuer
 
 api:
@@ -17,21 +17,12 @@ api:
 secret:
   acrauth : acrcred
 
-service:
-  api : lightning-api-svc
-
 claims:
   data: external-nfs-pvc
 
-volumes:
-  customerdata : datafabricguicustdata
-
 db:
-  METASTORE_DATABASE_URL: jdbc:postgresql://172.16.49.61:5432/metastore?sslmode=require&user=lightning&password=Zetaris100PGPASS
-  AUDIT_LOG_DATABASE_URL: jdbc:postgresql://172.16.49.61:5432/audit_log?sslmode=require&user=lightning&password=Zetaris100PGPASS
-
-server:
-  lightning_server_url: jdbc:zetaris:lightning@lightning-server-svc:10000
+  METASTORE_DATABASE_URL: jdbc:postgresql://#{postgresip}#:5432/metastore?sslmode=require&user=#{dbusername}#&password=#{dbpassword}#
+  AUDIT_LOG_DATABASE_URL: jdbc:postgresql://#{postgresip}#:5432/audit_log?sslmode=require&user=#{dbusername}#&password=#{dbpassword}#
 
 encryption:
   encryption_local_pk_path: /home/zetaris/lightning/password-security/private_key.der

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.configmap.server }}
+  name: lightning-server-config
   namespace: {{ .Values.namespace }}
 data:
   {{- (.Files.Glob "server/*.properties").AsConfig | nindent 2 }}
