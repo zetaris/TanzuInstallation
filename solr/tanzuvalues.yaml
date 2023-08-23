@@ -1,0 +1,11 @@
+# Default values for lightning-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name : lightning-solr
+email : clement.ching@zetaris.com
+namespace: zetaris
+
+solrimage : zetregistry.azurecr.io/lightning-solr:v8.6.0
+solrreplicas : 1
+registrysecretname: acrcred

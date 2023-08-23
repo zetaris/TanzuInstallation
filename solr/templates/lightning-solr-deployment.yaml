@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.solrreplicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.solrimage }}
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: /home/zetaris/lightning-solr-8.6.0/server/solr/cores/metadata/data
+            name: solr-metadata-pv
+          - mountPath: /home/zetaris/lightning-solr-8.6.0/server/solr/cores/content/data
+            name: solr-content-pv
+          ports:
+            - containerPort: 8983
+              protocol: TCP
+      volumes:
+      - name: solr-content-pv
+        persistentVolumeClaim:
+          claimName: solrcontent-pvc
+      - name: solr-metadata-pv
+        persistentVolumeClaim:
+          claimName: solrmetadata-pvc
+      imagePullSecrets:
+        - name: {{ .Values.registrysecretname }}

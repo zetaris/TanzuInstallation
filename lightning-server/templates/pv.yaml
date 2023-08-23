@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.persistentvolume.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    pv.kubernetes.io/provisioned-by: csi.vsphere.vmware.com
+spec:
+  storageClassName: {{ .Values.storageclass.name }}
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  claimRef:
+    namespace: {{ .Values.namespace }}
+    name: data-pvc
+  csi:
+    driver: "csi.vsphere.vmware.com"
+    volumeAttributes:
+       type: "vSphere CNS Block Volume"
+    volumeHandle: "data-pvc"  # Enter the PVC name from the Supervisor cluster.

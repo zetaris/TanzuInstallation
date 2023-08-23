@@ -1,0 +1,225 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# An example controller showing a sample home page
+
+GET         /lightning-gui                          com.zetaris.lightning.gui.controller.HomeController.index
+GET         /lightning-gui/                         com.zetaris.lightning.gui.controller.HomeController.index
+
+GET         /lightning-gui/streaming                com.zetaris.lightning.gui.controller.HomeController.showPageWithWorkbenchMode(page = "streaming")
+
+GET         /lightning-gui/schema-store             com.zetaris.lightning.gui.controller.HomeController.showPageWithWorkbenchMode(page = "schema")
+
+GET         /lightning-gui/audit-log                com.zetaris.lightning.gui.controller.HomeController.showPageWithWorkbenchMode(page = "al")
+
+GET         /lightning-gui/query-builder            com.zetaris.lightning.gui.controller.HomeController.showPageWithWorkbenchMode(page = "qb")
+
+GET         /lightning-gui/topological              com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "topo")
+
+GET         /lightning-gui/data-quality             com.zetaris.lightning.gui.controller.HomeController.dataQualityView(page = "dqm")
+
+GET         /lightning-gui/advanced-analytics       com.zetaris.lightning.gui.controller.HomeController.dataQualityView(page = "adv")
+
+GET         /lightning-gui/data-catalog             com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "vm")
+
+GET         /lightning-gui/data-fabric-builder      com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "dfb")
+
+GET         /lightning-gui/virtual-data-mart        com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "vdm")
+
+GET         /lightning-gui/warehouse-builder        com.zetaris.lightning.gui.controller.HomeController.warehouseBuilderView
+
+GET         /lightning-gui/user-management          com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "urm")
+
+GET         /lightning-gui/access-control           com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "sac")
+
+GET         /lightning-gui/data-fabric-file-system  com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "dffs")
+
+GET         /lightning-gui/data-pipeline            com.zetaris.lightning.gui.controller.HomeController.showPageByMode(page = "dppl")
+
+GET         /                                       com.zetaris.lightning.gui.controller.HomeController.index
+
+GET         /lightning-gui/about                    com.zetaris.lightning.gui.controller.HomeController.about
+
+GET         /lightning-gui/assets/*file             controllers.Assets.versioned(path="/public", file: Asset)
+
+GET         /lightning-gui/static/*file             controllers.Assets.at(path="/public/ui/static", file: String)
+
+#GET         /static/*file                           controllers.Assets.at(path="/public/ui/static", file: String)
+
+POST        /lightning-gui/query                    com.zetaris.lightning.gui.controller.QueryController.executeQuery
+
+POST        /lightning-gui/query_batch              com.zetaris.lightning.gui.controller.QueryController.executeBatch
+
+POST        /lightning-gui/query_batch_tab          com.zetaris.lightning.gui.controller.QueryController.executeQueryInEditor()
+
+POST        /lightning-gui/cancel_query              com.zetaris.lightning.gui.controller.QueryController.cancelQueryInEditor()
+
+GET         /lightning-gui/dataExceptionTypes       com.zetaris.lightning.gui.controller.QueryController.getDataExceptionTypes
+
+GET         /lightning-gui/dataQualityProcess       com.zetaris.lightning.gui.controller.QueryController.getDataQualityProcess
+
+GET         /lightning-gui/exception/:tableName/:rowNumber     com.zetaris.lightning.gui.controller.QueryController.getException(tableName: String, rowNumber: String)
+
+GET         /lightning-gui/detectedException/:jid   com.zetaris.lightning.gui.controller.QueryController.getDetectedException(jid: String, etype: Option[String] ?= None)
+
+GET         /lightning-gui/dataException            com.zetaris.lightning.gui.controller.QueryController.getDataException
+
+GET         /lightning-gui/folder/                  com.zetaris.lightning.gui.controller.FileController.getUserDir
+#get file list
+GET         /lightning-gui/folder/*path             com.zetaris.lightning.gui.controller.FileController.getFileList(path: String)
+#get a specific file
+GET         /lightning-gui/file/*name               com.zetaris.lightning.gui.controller.FileController.getFile(name: String)
+#delete a specific file
+DELETE      /lightning-gui/file/*name               com.zetaris.lightning.gui.controller.FileController.deleteFile(name: String)
+#update a file
+POST        /lightning-gui/file                     com.zetaris.lightning.gui.controller.FileController.updateFile
+
+GET         /lightning-gui/history                  com.zetaris.lightning.gui.controller.QueryHistoryController.getHistory
+
+GET         /lightning-gui/file_desc/*name          com.zetaris.lightning.gui.controller.FileController.getDescription(name: String)
+
+POST        /lightning-gui/file_desc/*name          com.zetaris.lightning.gui.controller.FileController.updateDescription(name: String)
+
+DELETE      /lightning-gui/file_desc/*name          com.zetaris.lightning.gui.controller.FileController.deleteDescription(name: String)
+
+GET         /lightning-gui/login                    com.zetaris.lightning.gui.controller.UserController.loginView
+
+POST        /lightning-gui/login                    com.zetaris.lightning.gui.controller.UserController.loginFormSubmit
+
+GET         /lightning-gui/logout                   com.zetaris.lightning.gui.controller.UserController.logoutBasic()
+
+POST        /lightning-gui/logout                   com.zetaris.lightning.gui.controller.UserController.logout
+
+PUT         /lightning-gui/password                 com.zetaris.lightning.gui.controller.UserController.updatePassword
+
+GET         /lightning-gui/current_user             com.zetaris.lightning.gui.controller.UserController.getCurrentUser
+
+POST        /lightning-gui/notebook/job             com.zetaris.lightning.gui.controller.NotebookController.kickoffNotebook
+
+GET         /lightning-gui/notebook/:uuid           com.zetaris.lightning.gui.controller.NotebookController.getNotebookStatus(uuid: String)
+
+GET         /lightning-gui/saas/configuration      com.zetaris.lightning.gui.controller.SaasConfiguration.cluster
+
+GET         /lightning-gui/topo_main                com.zetaris.lightning.gui.controller.TopoViewController.getTopoMainView
+
+POST        /lightning-gui/topo_main                com.zetaris.lightning.gui.controller.TopoViewController.updateTopoMainView
+
+GET         /lightning-gui/topo_details             com.zetaris.lightning.gui.controller.TopoViewController.getTopoDetailsView
+
+POST        /lightning-gui/topo_details             com.zetaris.lightning.gui.controller.TopoViewController.updateTopoDetailsView
+
+GET         /lightning-gui/data_mart_view/*name     com.zetaris.lightning.gui.controller.DataMartViewController.getDataMartView(name: String)
+
+POST        /lightning-gui/data_mart_view           com.zetaris.lightning.gui.controller.DataMartViewController.updateDataMartView
+
+DELETE      /lightning-gui/data_mart_view/*name     com.zetaris.lightning.gui.controller.DataMartViewController.deleteDataMartView(name: String)
+
+POST        /lightning-gui/gui_theme                com.zetaris.lightning.gui.controller.GuiThemeController.updateTheme
+
+
+GET         /lightning-gui/warehouseInfo/:dwUrl                                com.zetaris.lightning.gui.controller.WarehouseBuilderController.runningQueriesCount(dwUrl: String)
+
+GET         /lightning-gui/warehouseInfo/filters/:dates/:name                  com.zetaris.lightning.gui.controller.WarehouseBuilderController.queryCountHistory(dates: String, name: String)
+
+GET         /lightning-gui/warehouseInfo/realtime/:name                        com.zetaris.lightning.gui.controller.WarehouseBuilderController.queryCountRealtime(name: String)
+
+GET         /lightning-gui/api/topology                                        com.zetaris.lightning.gui.controller.TopoViewController.buildTopology
+
+GET         /lightning-gui/api/topology/datamart/:dm                           com.zetaris.lightning.gui.controller.TopoViewController.datamart(dm: String)
+
+GET         /lightning-gui/api/topology/datamart/:dm/associations              com.zetaris.lightning.gui.controller.TopoViewController.datamartAssociations(dm: String)
+
+GET         /lightning-gui/api/topology/positions                              com.zetaris.lightning.gui.controller.TopoViewController.getPosition(node: Option[String])
+
+POST        /lightning-gui/api/topology/positions                              com.zetaris.lightning.gui.controller.TopoViewController.savePosition
+
+GET         /lightning-gui/api/topology/datasource/:ds/tables                  com.zetaris.lightning.gui.controller.TopoViewController.tablesByDataSource(ds: String)
+
+GET         /lightning-gui/api/topology/datasource/:table/columns              com.zetaris.lightning.gui.controller.TopoViewController.columnsByTable(table: String)
+
+GET         /lightning-gui/api/topology/datasource/:name                       com.zetaris.lightning.gui.controller.TopoViewController.dataSource(name: String)
+
+POST        /lightning-gui/api/data-fabric/streaming/register                  com.zetaris.lightning.gui.controller.DataFabricBuilderController.registerStreaming()
+
+POST        /lightning-gui/api/data-fabric/streaming/register/kafka/:store     com.zetaris.lightning.gui.controller.DataFabricBuilderController.uploadKafkaKey(store: String)
+
+POST        /lightning-gui/api/data-fabric/streaming/register/kafka/delete/:store     com.zetaris.lightning.gui.controller.DataFabricBuilderController.deleteKeyFiles(store: String)
+
+GET         /lightning-gui/api/data-fabric/streaming/register/kafka/stores     com.zetaris.lightning.gui.controller.DataFabricBuilderController.listKeyFiles()
+
+POST        /lightning-gui/api/data-fabric/streaming/aggregate                 com.zetaris.lightning.gui.controller.DataFabricBuilderController.aggregateStreaming()
+
+GET         /lightning-gui/api/data-fabric/streaming/list                      com.zetaris.lightning.gui.controller.DataFabricBuilderController.listStreaming()
+
+GET         /lightning-gui/api/data-fabric/streaming/listWithAggSize           com.zetaris.lightning.gui.controller.DataFabricBuilderController.listWithAggSizeStreaming
+
+DELETE      /lightning-gui/api/data-fabric/streaming/delete/:name              com.zetaris.lightning.gui.controller.DataFabricBuilderController.deleteStreaming(name: String)
+
+GET         /lightning-gui/api/data-fabric/streaming/aggregation/:name         com.zetaris.lightning.gui.controller.DataFabricBuilderController.listAggStreaming(name: String)
+
+DELETE      /lightning-gui/api/data-fabric/streaming/aggregation/delete/:name  com.zetaris.lightning.gui.controller.DataFabricBuilderController.deleteAggStreaming(name: String)
+
+GET         /lightning-gui/api/warehouses/credit                               com.zetaris.lightning.gui.controller.WarehouseBuilderController.datawarehouseCredit()
+
+GET         /lightning-gui/api/server/status                                   com.zetaris.lightning.gui.controller.ServerMonitoringController.isServerAvailable
+
+GET         /lightning-gui/api/server/activeSessions                           com.zetaris.lightning.gui.controller.ServerMonitoringController.activeSessions
+
+GET         /lightning-gui/api/server/sessionOut                               com.zetaris.lightning.gui.controller.ServerMonitoringController.sessionOut
+
+POST        /lightning-gui/api/filesystem/save                                 com.zetaris.lightning.gui.controller.FileSystemController.saveFiles
+
+POST        /lightning-gui/api/filesystem/get                                  com.zetaris.lightning.gui.controller.FileSystemController.get
+
+POST        /lightning-gui/api/filesystem/list                                 com.zetaris.lightning.gui.controller.FileSystemController.list
+
+POST        /lightning-gui/api/filesystem/walk                                 com.zetaris.lightning.gui.controller.FileSystemController.walk
+
+POST        /lightning-gui/api/filesystem/delete                               com.zetaris.lightning.gui.controller.FileSystemController.deleteSafe
+
+POST        /lightning-gui/api/filesystem/delete/all                           com.zetaris.lightning.gui.controller.FileSystemController.deleteForce
+
+POST        /lightning-gui/api/filesystem/rename                               com.zetaris.lightning.gui.controller.FileSystemController.rename
+
+POST        /lightning-gui/api/filesystem/move                                 com.zetaris.lightning.gui.controller.FileSystemController.move
+
+POST        /lightning-gui/api/filesystem/createdir                            com.zetaris.lightning.gui.controller.FileSystemController.createDirectory
+
+GET         /lightning-gui/pipeline_positions/*name                             com.zetaris.lightning.gui.controller.PipelineGraphController.getPipelineGraph(name: String)
+
+POST        /lightning-gui/pipeline_positions                                   com.zetaris.lightning.gui.controller.PipelineGraphController.savePipelineGraph
+
+DELETE      /lightning-gui/pipeline_positions/*name                             com.zetaris.lightning.gui.controller.PipelineGraphController.deletePipelineGraph(name: String)
+
+GET         /lightning-gui/api/query_builder/graph/:name                        com.zetaris.lightning.gui.controller.QueryBuilderController.get(name: String)
+
+POST        /lightning-gui/api/query_builder/graph/save                         com.zetaris.lightning.gui.controller.QueryBuilderController.save()
+
+DELETE      /lightning-gui/api/query_builder/graph/delete/:name                 com.zetaris.lightning.gui.controller.QueryBuilderController.delete(name: String)
+
+GET         /lightning-gui/api/policy/:ds/:table                                com.zetaris.lightning.gui.controller.DataFabricBuilderController.getPolicy(ds: String, table: String)
+
+POST        /lightning-gui/api/policy/save                                      com.zetaris.lightning.gui.controller.DataFabricBuilderController.savePolicy()
+
+DELETE      /lightning-gui/api/policy/:ds/:table                                com.zetaris.lightning.gui.controller.DataFabricBuilderController.deletePolicy(ds: String, table: String)
+
+POST        /lightning-gui/api/zhub/ops                                         com.zetaris.lightning.gui.controller.BillingHubController.operations()
+
+POST        /lightning-gui/api/zhub/theme                                       com.zetaris.lightning.gui.controller.BillingHubController.getTheme
+
+GET         /lightning-gui/api/user_profile/get                                 com.zetaris.lightning.gui.controller.DataFabricBuilderController.getUserProfile()
+
+POST        /lightning-gui/api/user_profile/save                                com.zetaris.lightning.gui.controller.DataFabricBuilderController.saveUserProfile()
+
+DELETE      /lightning-gui/api/user_profile/delete                              com.zetaris.lightning.gui.controller.DataFabricBuilderController.deleteUserProfile()
+
+GET         /lightning-gui/api/org/logo                                         com.zetaris.lightning.gui.controller.HomeController.logo()
+
+GET         /lightning-gui/api/org/name                                         com.zetaris.lightning.gui.controller.HomeController.name()
+
+# Routes necessary for play-pac4j
+GET         /callback                                                           com.zetaris.lightning.gui.security.java.LightningCallbackController.callback()
+POST        /callback                                                           com.zetaris.lightning.gui.security.java.LightningCallbackController.callback()
+GET         /logout                                                             @org.pac4j.play.LogoutController.logout()
+GET         /centralLogout                                                      com.zetaris.lightning.gui.controller.CentralLogoutController.logout()

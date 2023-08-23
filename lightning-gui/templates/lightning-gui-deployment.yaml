@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.name }}
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      securityContext:
+        fsGroup: 1001
+        runAsGroup: 1001
+        runAsUser: 1001
+      containers:
+        - name: {{ .Values.name }}
+          image: {{ .Values.gui.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INTERNAL_REST_SERVICE_URL
+              value: {{ .Values.api_service.internal_rest_service_url }}
+            - name: REST_SERVICE_URL
+              value: {{ .Values.api_service.api_external_url }}
+            - name: LIGHTNING_SERVER_URL
+              value: {{ .Values.api_service.lightning_server_url }}
+            - name: ZFILESYSTEM_STAGING
+              value: {{ .Values.filesystem_staging }}
+            - name: CALENDLY_URL
+              value: {{ .Values.calendly_url }}        
+            - name: SHOW_BUILD_HASH
+              value: {{ .Values.show_build_hash | quote }}
+            - name: APACHE_AIRFLOW_URL
+              value: {{ .Values.airflow.airflow_url }}
+            - name: ENABLE_HUBSPOT_TRACKING
+              value: {{ .Values.enable_hubspot_tracking | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.ndp.secret }}
+            - secretRef:
+                name: {{ .Values.secret.gui }}
+            - configMapRef:
+                name: {{ .Values.configmap.general }}
+          ports:
+            - containerPort: 9001
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /home/zetaris/customer-data
+              name: {{ .Values.volumes.customerdata }}
+            - mountPath: /home/zetaris/lightning-gui/conf
+              name: {{ .Values.volumes.config }}
+      imagePullSecrets:
+        - name: {{ .Values.secret.acrauth }}
+      volumes:
+        - name: {{ .Values.volumes.config }}
+          configMap:
+            name: {{ .Values.configmap.gui }}
+        - name: {{ .Values.volumes.customerdata }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.claims.data }}

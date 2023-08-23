@@ -1,0 +1,8 @@
+authentication.failure=Authentication failed. Check with your administrator.
+authentication.accountLocked=Your account {0} has been locked because you have reached maximum number of invalid logins. Try again in {1} minutes. You may contact your administrator or Zetaris for support.
+authentication.SSO.clientIdNotFound=ClientId not found. Try to login again with clientId.
+authentication.SSO.configNotFound=No SSO configuration found. Please contact your support specialist.
+authentication.SSO.userError=Error logging in user {0}.
+authentication.SSO.orgNotFound=Can't find organisation.
+authentication.SSO.orgNotFoundInCache=Organisation not found. Try to login again with clientId.
+authentication.SSO.generalError=Encountered an SSO configuration error. Please contact your support specialist.

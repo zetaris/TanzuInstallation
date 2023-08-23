@@ -1,0 +1,325 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: Scala
+  sparkVersion: {{ .Values.deployment.version }}
+  mode: cluster
+  image: {{ .Values.deployment.image}}
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - {{ .Values.secret.acrauth }}
+  restartPolicy:
+    type: Always
+  mainClass: org.apache.spark.sql.hive.thriftserver.LightningHiveServer2
+  mainApplicationFile: local:///home/zetaris/lightning/lib/com.zetaris.ndp-sql-{{ .Values.app_version }}.jar
+  arguments:
+    - spark-internal
+  sparkConf:
+    spark.driver.extraClassPath: /home/zetaris/lightning/conf:/home/zetaris/lightning/other/*
+    spark.executor.extraClassPath: /home/zetaris/lightning/other/*
+    spark.driver.extraJavaOptions:
+      -Djavax.net.ssl.trustStore=/home/zetaris/customer-data/certificates/cacerts
+      -Djavax.net.ssl.trustStorePassword=changeit
+    spark.executor.extraJavaOptions:
+      -Djavax.net.ssl.trustStore=/home/zetaris/customer-data/certificates/cacerts
+      -Djavax.net.ssl.trustStorePassword=changeit -XX:+UseCompressedOops -XX:+UseG1GC
+      -Dorg.xerial.snappy.use.systemlib=true
+      -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so
+    spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version: "2"
+    spark.kubernetes.file.upload.path: /home/zetaris/lightning/conf/krb5.conf
+    spark.metrics.conf: /home/zetaris/lightning/conf/metrics.properties
+    spark.ui.retainedtasks: "100"
+    spark.ui.retainedJobs: "100"
+    spark.ui.retainedStages: "100"
+    spark.sql.ui.retainedExecutions: "100"
+    spark.streaming.ui.retainedBatches: "100"
+  driver:
+    javaOptions: -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so -Dorg.xerial.snappy.use.systemlib=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/spark/work-dir/driver_heap_dump.log -XX:+UseG1GC -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:+ExplicitGCInvokesConcurrent -verbose:gc -XX:+PrintHeapAtGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -Xloggc:/opt/spark/work-dir/driver_gc_log.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=9 -XX:GCLogFileSize=20M
+    cores: {{ .Values.driver.cores }}
+    memory: {{ .Values.driver.memory }}
+    envFrom:
+      - secretRef:
+          name: lightning-server-secret
+      - configMapRef:
+          name: lightning-general-config
+    labels:
+      version: {{ .Values.deployment.version }}
+      app: lightning-server
+    serviceAccount: {{ .Values.serviceaccount.name }}
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+    volumeMounts:
+      - name: lightning-server-conf-volume
+        mountPath: /home/zetaris/lightning/conf
+      - name: lightning-customer-data-volume
+        mountPath: /home/zetaris/customer-data
+      - name: password-security-volume
+        mountPath: /home/zetaris/lightning/password-security
+  executor:
+    javaOptions: -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so -Dorg.xerial.snappy.use.systemlib=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/spark/logs/executor_heap_dump.log -XX:+UseG1GC -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:+ExplicitGCInvokesConcurrent -verbose:gc -XX:+PrintHeapAtGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -Xloggc:/opt/spark/logs/executor_gc_log.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=9 -XX:GCLogFileSize=20M
+    cores: {{ .Values.executor.cores }}
+    memory: {{ .Values.executor.memory }}
+    envFrom:
+      - secretRef:
+          name: lightning-server-secret
+      - configMapRef:
+          name: lightning-general-config
+    labels:
+      version: {{ .Values.deployment.version }}
+      app: lightning-executor
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001    
+      runAsGroup: 1001
+    volumeMounts:
+      - name: lightning-server-conf-volume
+        mountPath: /home/zetaris/lightning/conf
+      - name: lightning-customer-data-volume
+        mountPath: /home/zetaris/customer-data
+      - name: password-security-volume
+        mountPath: /home/zetaris/lightning/password-security
+  ### Use dynamicAllocation that can replace instances field in executor
+  dynamicAllocation:
+    enabled: true
+    initialExecutors: {{ .Values.executor.initialExecutors }}
+    maxExecutors: {{ .Values.executor.maxExecutors }}
+    minExecutors: {{ .Values.executor.minExecutors }}
+  deps:
+    files:
+      - local:///home/zetaris/lightning/conf/metrics.properties
+      - local:///home/zetaris/lightning/conf/meta_store.properties
+    jars:
+      - local:///home/zetaris/lightning/lib/antlr.antlr-2.7.7.jar
+      - local:///home/zetaris/lightning/lib/bigquery-fatjar-1.3.0.1001.jar
+      - local:///home/zetaris/lightning/lib/com.101tec.zkclient-0.10.jar
+      - local:///home/zetaris/lightning/lib/com.amazon.deequ.deequ-2.0.3-spark-3.3.jar
+      - local:///home/zetaris/lightning/lib/com.amazon.redshift.redshift-jdbc42-2.1.0.11.jar
+      - local:///home/zetaris/lightning/lib/com.amazonaws.jmespath-java-1.12.455.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-core-1.38.0.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-core-http-netty-1.13.2.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-json-1.0.0.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-storage-blob-12.22.0.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-storage-common-12.21.0.jar
+      - local:///home/zetaris/lightning/lib/com.azure.azure-storage-internal-avro-12.7.0.jar
+      - local:///home/zetaris/lightning/lib/com.chuusai.shapeless_2.12-2.3.2.jar
+      - local:///home/zetaris/lightning/lib/com.databricks.databricks-jdbc-2.6.32.jar
+      - local:///home/zetaris/lightning/lib/com.databricks.spark-xml_2.12-0.16.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.oss.java-driver-core-shaded-4.13.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.oss.java-driver-mapper-runtime-4.13.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.oss.java-driver-query-builder-4.13.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.oss.java-driver-shaded-guava-25.1-jre-graal-sub-1.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.oss.native-protocol-1.5.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.spark.spark-cassandra-connector-driver_2.12-3.3.0.jar
+      - local:///home/zetaris/lightning/lib/com.datastax.spark.spark-cassandra-connector_2.12-3.3.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.classmate-1.3.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.core.jackson-annotations-2.14.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.core.jackson-core-2.14.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.core.jackson-databind-2.14.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.dataformat.jackson-dataformat-toml-2.14.0.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.dataformat.jackson-dataformat-xml-2.13.5.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.jackson.datatype.jackson-datatype-jsr310-2.13.5.jar
+      - local:///home/zetaris/lightning/lib/com.fasterxml.woodstox.woodstox-core-6.4.0.jar
+      - local:///home/zetaris/lightning/lib/com.github.ben-manes.caffeine.caffeine-2.9.3.jar
+      - local:///home/zetaris/lightning/lib/com.github.fommil.netlib.core-1.1.2.jar
+      - local:///home/zetaris/lightning/lib/com.github.luben.zstd-jni-1.4.9-1.jar
+      - local:///home/zetaris/lightning/lib/com.github.rwl.jtransforms-2.4.0.jar
+      - local:///home/zetaris/lightning/lib/com.github.spotbugs.spotbugs-annotations-3.1.12.jar
+      - local:///home/zetaris/lightning/lib/com.github.stephenc.jcip.jcip-annotations-1.0-1.jar
+      - local:///home/zetaris/lightning/lib/com.github.waffle.waffle-jna-3.2.0.jar
+      - local:///home/zetaris/lightning/lib/com.google.code.findbugs.jsr305-3.0.2.jar
+      - local:///home/zetaris/lightning/lib/com.google.errorprone.error_prone_annotations-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/com.google.guava.guava-20.0.jar
+      - local:///home/zetaris/lightning/lib/com.google.protobuf.protobuf-java-3.21.9.jar
+      - local:///home/zetaris/lightning/lib/com.googlecode.json-simple.json-simple-1.1.1.jar
+      - local:///home/zetaris/lightning/lib/com.ibm.db2.jcc.db2jcc-db2jcc4.jar
+      - local:///home/zetaris/lightning/lib/com.jamesmurty.utils.java-xmlbuilder-1.2.jar
+      - local:///home/zetaris/lightning/lib/com.mchange.c3p0-0.9.5.4.jar
+      - local:///home/zetaris/lightning/lib/com.mchange.mchange-commons-java-0.2.15.jar
+      - local:///home/zetaris/lightning/lib/com.microsoft.azure.azure-keyvault-core-1.0.0.jar
+      - local:///home/zetaris/lightning/lib/com.microsoft.sqlserver.mssql-jdbc-6.2.1.jre8.jar
+      - local:///home/zetaris/lightning/lib/com.mysql.mysql-connector-j-8.0.32.jar
+      - local:///home/zetaris/lightning/lib/com.oracle.database.jdbc.ojdbc8-21.9.0.0.jar
+      - local:///home/zetaris/lightning/lib/com.teradata.jdbc.terajdbc-20.00.00.06.jar
+      - local:///home/zetaris/lightning/lib/com.thoughtworks.paranamer.paranamer-2.8.jar
+      - local:///home/zetaris/lightning/lib/com.typesafe.config-1.4.1.jar
+      - local:///home/zetaris/lightning/lib/com.typesafe.scala-logging.scala-logging_2.12-3.9.0.jar
+      - local:///home/zetaris/lightning/lib/com.vertica.jdbc.vertica-jdbc-10.1.1-0.jar
+      - local:///home/zetaris/lightning/lib/com.yammer.metrics.metrics-core-2.2.0.jar
+      - local:///home/zetaris/lightning/lib/com.zaxxer.HikariCP-java7-2.4.13.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.ndp-cache_2.12-0.2.3.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.ndp-solr-{{ .Values.app_version }}.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.ndp-sql-{{ .Values.app_version }}.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.zetaris-ndp-{{ .Values.app_version }}.jar
+      - local:///home/zetaris/lightning/lib/commons-codec.commons-codec-1.11.jar
+      - local:///home/zetaris/lightning/lib/commons-io.commons-io-2.11.0.jar
+      - local:///home/zetaris/lightning/lib/commons-logging.commons-logging-1.2.jar
+      - local:///home/zetaris/lightning/lib/dom4j.dom4j-1.6.1.jar
+      - local:///home/zetaris/lightning/lib/greenplum-progress-datadirect-jdbc-6.0.0.000181.jar
+      - local:///home/zetaris/lightning/lib/io.delta.delta-core_2.12-2.2.0.jar
+      - local:///home/zetaris/lightning/lib/io.delta.delta-storage-2.3.0.jar
+      - local:///home/zetaris/lightning/lib/io.dropwizard.metrics.metrics-core-4.1.18.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-buffer-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-codec-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-codec-dns-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-codec-http-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-codec-http2-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-codec-socks-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-common-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-handler-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-handler-proxy-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-resolver-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-resolver-dns-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-resolver-dns-classes-macos-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-resolver-dns-native-macos-4.1.89.Final-osx-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final-linux-aarch_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final-linux-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final-osx-aarch_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final-osx-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final-windows-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-boringssl-static-2.0.56.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-tcnative-classes-2.0.56.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-classes-epoll-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-classes-kqueue-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-native-epoll-4.1.89.Final-linux-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-native-kqueue-4.1.89.Final-osx-x86_64.jar
+      - local:///home/zetaris/lightning/lib/io.netty.netty-transport-native-unix-common-4.1.89.Final.jar
+      - local:///home/zetaris/lightning/lib/io.projectreactor.netty.reactor-netty-core-1.0.28.jar
+      - local:///home/zetaris/lightning/lib/io.projectreactor.netty.reactor-netty-http-1.0.28.jar
+      - local:///home/zetaris/lightning/lib/io.projectreactor.reactor-core-3.4.27.jar
+      - local:///home/zetaris/lightning/lib/javax.activation.activation-1.1.1.jar
+      - local:///home/zetaris/lightning/lib/javax.cache.cache-api-1.0.0.jar
+      - local:///home/zetaris/lightning/lib/javax.json.javax.json-api-1.1.4.jar
+      - local:///home/zetaris/lightning/lib/javax.ws.rs.javax.ws.rs-api-2.1.1.jar
+      - local:///home/zetaris/lightning/lib/junit.junit-4.10.jar
+      - local:///home/zetaris/lightning/lib/net.iharder.base64-2.3.8.jar
+      - local:///home/zetaris/lightning/lib/net.java.dev.jets3t.jets3t-0.9.4.jar
+      - local:///home/zetaris/lightning/lib/net.java.dev.jna.jna-5.12.1.jar
+      - local:///home/zetaris/lightning/lib/net.java.dev.jna.jna-platform-5.12.1.jar
+      - local:///home/zetaris/lightning/lib/net.sf.jopt-simple.jopt-simple-5.0.4.jar
+      - local:///home/zetaris/lightning/lib/net.sf.opencsv.opencsv-2.3.jar
+      - local:///home/zetaris/lightning/lib/net.snowflake.snowflake-jdbc-3.13.28.jar
+      - local:///home/zetaris/lightning/lib/net.sourceforge.f2j.arpack_combined_all-0.1.jar
+      - local:///home/zetaris/lightning/lib/org.antlr.antlr4-runtime-4.8.jar
+      - local:///home/zetaris/lightning/lib/org.apache.commons.commons-dbcp2-2.9.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.commons.commons-lang3-3.12.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.commons.commons-math3-3.6.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.commons.commons-pool2-2.11.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.derby.derbyclient-10.14.2.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.geronimo.specs.geronimo-jta_1.1_spec-1.1.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.hadoop.hadoop-client-api-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.hadoop.hadoop-client-runtime-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.hadoop.thirdparty.hadoop-shaded-guava-1.1.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.httpcomponents.httpclient-4.5.13.jar
+      - local:///home/zetaris/lightning/lib/org.apache.httpcomponents.httpcore-4.4.13.jar
+      - local:///home/zetaris/lightning/lib/org.apache.httpcomponents.httpmime-4.5.10.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-core-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-indexing-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-kubernetes-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-log4j-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-spark-2.4-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ignite.ignite-spring-2.10.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.kafka.connect-api-2.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.kafka.connect-json-2.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.kafka.kafka-clients-2.8.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.kafka.kafka-streams-2.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.kafka.kafka_2.12-2.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.logging.log4j.log4j-api-2.17.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.logging.log4j.log4j-core-2.17.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.logging.log4j.log4j-slf4j-impl-2.17.1.jar
+      - local:///home/zetaris/lightning/lib/org.apache.lucene.lucene-analyzers-common-7.4.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.lucene.lucene-core-7.4.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.lucene.lucene-queries-7.4.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.lucene.lucene-queryparser-7.4.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.lucene.lucene-sandbox-7.4.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.solr.solr-solrj-8.6.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.spark.spark-avro_2.12-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.spark.spark-sql-kafka-0-10_2.12-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.spark.spark-tags_2.12-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.spark.spark-token-provider-kafka-0-10_2.12-3.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.apache.ws.xmlschema.xmlschema-core-2.3.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.yetus.audience-annotations-0.5.0.jar
+      - local:///home/zetaris/lightning/lib/org.apache.zookeeper.zookeeper-3.5.7.jar
+      - local:///home/zetaris/lightning/lib/org.apache.zookeeper.zookeeper-jute-3.5.7.jar
+      - local:///home/zetaris/lightning/lib/org.checkerframework.checker-qual-3.23.0.jar
+      - local:///home/zetaris/lightning/lib/org.codehaus.jackson.jackson-core-asl-1.9.13.jar
+      - local:///home/zetaris/lightning/lib/org.codehaus.jackson.jackson-mapper-asl-1.9.13.jar
+      - local:///home/zetaris/lightning/lib/org.codehaus.woodstox.stax2-api-4.2.1.jar
+      - local:///home/zetaris/lightning/lib/org.codehaus.woodstox.woodstox-core-asl-4.4.1.jar
+      - local:///home/zetaris/lightning/lib/org.elasticsearch.plugin.x-pack-sql-jdbc-8.6.2.jar
+      - local:///home/zetaris/lightning/lib/org.flywaydb.flyway-core-9.16.0.jar
+      - local:///home/zetaris/lightning/lib/org.glassfish.jaxb.txw2-3.0.2.jar
+      - local:///home/zetaris/lightning/lib/org.gridgain.ignite-shmem-1.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.hamcrest.hamcrest-core-1.1.jar
+      - local:///home/zetaris/lightning/lib/org.hdrhistogram.HdrHistogram-2.1.12.jar
+      - local:///home/zetaris/lightning/lib/org.hibernate.common.hibernate-commons-annotations-5.0.1.Final.jar
+      - local:///home/zetaris/lightning/lib/org.hibernate.hibernate-core-5.1.0.Final.jar
+      - local:///home/zetaris/lightning/lib/org.hibernate.hibernate-entitymanager-5.1.0.Final.jar
+      - local:///home/zetaris/lightning/lib/org.hibernate.javax.persistence.hibernate-jpa-2.1-api-1.0.0.Final.jar
+      - local:///home/zetaris/lightning/lib/org.javassist.javassist-3.20.0-GA.jar
+      - local:///home/zetaris/lightning/lib/org.jboss.jandex-2.0.0.Final.jar
+      - local:///home/zetaris/lightning/lib/org.jboss.logging.jboss-logging-3.3.0.Final.jar
+      - local:///home/zetaris/lightning/lib/org.jetbrains.annotations-16.0.3.jar
+      - local:///home/zetaris/lightning/lib/org.lz4.lz4-java-1.7.1.jar
+      - local:///home/zetaris/lightning/lib/org.mariadb.jdbc.mariadb-java-client-3.1.2.jar
+      - local:///home/zetaris/lightning/lib/org.mongodb.bson-4.8.2.jar
+      - local:///home/zetaris/lightning/lib/org.mongodb.bson-record-codec-4.8.2.jar
+      - local:///home/zetaris/lightning/lib/org.mongodb.mongodb-driver-core-4.8.2.jar
+      - local:///home/zetaris/lightning/lib/org.mongodb.mongodb-driver-sync-4.8.2.jar
+      - local:///home/zetaris/lightning/lib/org.mongodb.spark.mongo-spark-connector_2.12-10.1.1.jar
+      - local:///home/zetaris/lightning/lib/org.passay.passay-1.6.2.jar
+      - local:///home/zetaris/lightning/lib/org.postgresql.postgresql-42.5.4.jar
+      - local:///home/zetaris/lightning/lib/org.quartz-scheduler.quartz-2.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.quartz-scheduler.quartz-jobs-2.3.2.jar
+      - local:///home/zetaris/lightning/lib/org.reactivestreams.reactive-streams-1.0.4.jar
+      - local:///home/zetaris/lightning/lib/org.rocksdb.rocksdbjni-5.7.3.jar
+      - local:///home/zetaris/lightning/lib/org.scala-lang.modules.scala-collection-compat_2.12-2.9.0.jar
+      - local:///home/zetaris/lightning/lib/org.scala-lang.modules.scala-xml_2.12-1.0.6.jar
+      - local:///home/zetaris/lightning/lib/org.scala-lang.scala-compiler-2.12.10.jar
+      - local:///home/zetaris/lightning/lib/org.scala-lang.scala-library-2.12.10.jar
+      - local:///home/zetaris/lightning/lib/org.scala-lang.scala-reflect-2.12.10.jar
+      - local:///home/zetaris/lightning/lib/org.scalanlp.breeze-macros_2.12-0.13.2.jar
+      - local:///home/zetaris/lightning/lib/org.scalanlp.breeze_2.12-0.13.2.jar
+      - local:///home/zetaris/lightning/lib/org.slf4j.jcl-over-slf4j-1.7.36.jar
+      - local:///home/zetaris/lightning/lib/org.slf4j.slf4j-api-1.7.36.jar
+      - local:///home/zetaris/lightning/lib/org.spark-project.spark.unused-1.0.0.jar
+      - local:///home/zetaris/lightning/lib/org.spire-math.spire-macros_2.12-0.13.0.jar
+      - local:///home/zetaris/lightning/lib/org.spire-math.spire_2.12-0.13.0.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-aop-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-beans-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-context-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-core-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-expression-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-jcl-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-jdbc-4.3.26.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-orm-4.3.26.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-tx-4.3.26.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.spring-web-5.2.12.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.springframework.vault.spring-vault-core-2.2.3.RELEASE.jar
+      - local:///home/zetaris/lightning/lib/org.tukaani.xz-1.9.jar
+      - local:///home/zetaris/lightning/lib/org.typelevel.machinist_2.12-0.6.1.jar
+      - local:///home/zetaris/lightning/lib/org.typelevel.macro-compat_2.12-1.1.1.jar
+      - local:///home/zetaris/lightning/lib/org.wildfly.openssl.wildfly-openssl-2.2.5.Final.jar
+      - local:///home/zetaris/lightning/lib/org.xerial.snappy.snappy-java-1.1.8.2.jar
+      - local:///home/zetaris/lightning/lib/org.xerial.sqlite-jdbc-3.41.2.2.jar
+      - local:///home/zetaris/lightning/lib/xml-apis.xml-apis-1.0.b2.jar
+      - local:///home/zetaris/lightning/jdbc-driver/ndp-jdbc-driver-2.1.0.19-driver.jar
+  volumes:
+    - name: lightning-server-conf-volume
+      configMap:
+        name: lightning-server-config
+    - name: password-security-volume
+      secret:
+        defaultMode: 0400
+        secretName: lightning-password-security-encryption-secret
+    - name: lightning-customer-data-volume
+      persistentVolumeClaim:
+        claimName: external-nfs-pvc
+  monitoring:
+    exposeDriverMetrics: true
+    exposeExecutorMetrics: true

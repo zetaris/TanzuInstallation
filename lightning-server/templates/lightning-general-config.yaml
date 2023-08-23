@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configmap.general }}
+  namespace: {{ .Values.namespace }}
+data:
+  login_duration_in_minutes: "10"
+  login_attempts_limit: "3"

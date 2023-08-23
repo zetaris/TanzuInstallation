@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property>
+    <name>lighting.sql.fusiondb.coordinator_host</name>
+    <value></value>
+    <description>host name for zmpp</description>
+  </property>
+  <property>
+    <name>lighting.sql.fusiondb.coordinator_port</name>
+    <value>20004</value>
+  </property>
+  <property>
+    <name>lighting.sql.fusiondb.db_instance</name>
+    <value>lookup('env','FUSION_DB_NAME')</value>
+  </property>
+  <property>
+    <name>lighting.sql.fusiondb.user_name</name>
+    <value></value>
+  </property>
+  <property>
+    <name>lighting.sql.fusiondb.password</name>
+    <value></value>
+  </property>
+
+  <property>
+    <name>lighting.sql.fusiondb.datanode_host</name>
+    <value>('', '')</value>
+  </property>
+  <property>
+    <!--if this is not provided, it follows lighting.sql.zmpp.coordinator_port-->
+    <name>lighting.sql.fusiondb.datanode_port</name>
+    <value>20008,20008</value>
+  </property>
+  <property>
+    <!--if this is not provided, it follows lighting.sql.zmpp.db_instance-->
+    <name>lighting.sql.fusiondb.datanode_db_instance</name>
+    <value>('', '')</value>
+  </property>
+  <property>
+    <!--if this is not provided, it follows lighting.sql.zmpp.user_name-->
+    <name>lighting.sql.fusiondb.datanode_user_name</name>
+    <value>('', '')</value>
+  </property>
+  <property>
+    <!--if this is not provided, it follows lighting.sql.zmpp.password-->
+    <name>lighting.sql.fusiondb.datanode_password</name>
+    <value>('', '')</value>
+  </property>
+
+  <property>
+    <name>schema_prepended_table</name>
+    <value>true</value>
+  </property>
+
+</configuration>

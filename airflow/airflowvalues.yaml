@@ -1,0 +1,105 @@
+extraEnv: |
+  - name: AIRFLOW__CORE__LOAD_EXAMPLES
+    value: 'False'
+  - name: AIRFLOW__CORE__DAGS_FOLDER
+    value: '/opt/airflow/dags'
+
+config:
+  core:
+    dags_folder: /opt/airflow/dags
+
+fernetKey: aXpRdlB6ZXFYNmlUMXF3azlmekVnTDRRMlUyZnFyR0Y=
+webserverSecretKey: f961bb0c18fb0fc56297e97558e9c238
+
+images:
+  airflow:
+   repository: zetaris/airflow
+   tag: v0.9
+
+scheduler:
+  resources:
+    requests:
+      cpu: "300m"
+      memory: "1Gi"
+
+dags:
+  persistence:
+    enabled: true
+    size: 2Gi
+    storageClassName: nfs-external
+    accessMode: ReadWriteMany
+    existingClaim: dags-pvc
+    subPath: ~
+
+env:
+  - name: "AIRFLOW_VAR_JDBC_IP"
+    value: "172.16.49.80"
+  - name: "AIRFLOW_VAR_LIGHTNING_USER"
+    value: "dev@account.com"
+  - name: "AIRFLOW_VAR_LIGHTNING_PASSWORD"
+    value: "password"
+  - name: "AIRFLOW_VAR_LIGHTNING_API_URL"
+    value: "https://api.zetaris.tanzu.lab"
+  - name: "AIRFLOW_VAR_AIRFLOW_URL"
+    value: "https://airflow.zetaris.tanzu.lab"
+  - name: "AIRFLOW_VAR_DAGS_DIR"
+    value: "/opt/airflow/dagsdir/"
+  - name: AIRFLOW__SMTP__SMTP_HOST
+    value: "smtp.office365.com"
+  - name: AIRFLOW__SMTP__SMTP_SSL
+    value: "False"
+  - name: AIRFLOW__SMTP__SMTP_STARTTLS
+    value: "True"
+  - name: AIRFLOW__SMTP__SMTP_USER
+    value: "notifications@zetaris.com"
+  - name: AIRFLOW__SMTP__SMTP_PASSWORD
+    value: "M@573r(1)#"
+  - name: AIRFLOW__SMTP__SMTP_PORT
+    value: "587"
+  - name: AIRFLOW__SMTP__SMTP_MAIL_FROM
+    value: "notifications@zetaris.com"
+
+registry:
+  secretName: dockerhubcred
+
+postgresql:
+  enabled: false
+  
+webserver:
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: admin
+    email: admin@zetaris.com
+    firstName: admin
+    lastName: zetaris
+    password: zetaris
+  resources:
+    requests:
+      cpu: "300m"
+      memory: "1Gi"
+  livenessProbe:
+    initialDelaySeconds: 10
+    timeoutSeconds: 100
+    failureThreshold: 5
+    periodSeconds: 600
+
+workers:
+  resources:
+    requests:
+      cpu: "300m"
+      memory: "1Gi"
+
+logs:
+  persistence:
+    enabled: false
+
+data:
+  metadataConnection:
+    protocol: postgresql
+    host: 172.16.49.61
+    port: 5432
+    user: lightning
+    pass: Zetaris100PGPASS
+    db: airflow_db
+    sslmode : require

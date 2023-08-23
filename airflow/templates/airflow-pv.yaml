@@ -1,0 +1,14 @@
+# Create a PersistentVolumeClaim referencing the StorageClass and the volume
+# Remember: this is a static scenario. The volume was created in the previous step.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dags-pvc
+  namespace: airflow
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: {{ .Values.storageclass }}
