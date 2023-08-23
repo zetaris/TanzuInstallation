@@ -98,9 +98,9 @@ logs:
 data:
   metadataConnection:
     protocol: postgresql
-    host: 172.16.49.61
+    host: #{postgresqlip}#
     port: 5432
-    user: lightning
-    pass: Zetaris100PGPASS
+    user: #{dbadmin}#
+    pass: #{dbpassword}#
     db: airflow_db
     sslmode : require
