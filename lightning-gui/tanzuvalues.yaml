@@ -15,6 +15,7 @@ clusterissuer: local-ca-issuer
 gui:
   image : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
 
+#There is no need to modify these credentials.
 ndp: 
   username : admin@default.com
   password : 9Ly3@UBmo8Nw
@@ -23,8 +24,9 @@ ndp:
 secret:
   dockerhubcred : dockerhubcred
 
+#this should be the same name as the PVC created for the server
 claims:
-  data: external-nfs-pvc
+  data: #{customerdatapvc}#
 
 filesystem_staging: /home/zetaris/customer-data
 calendly_url: https://calendly.com/d/x4w-yk4-q8b/zetaris-customer-success-touchpoint

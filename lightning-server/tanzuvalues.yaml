@@ -13,11 +13,8 @@ deployment:
   image : zetaris/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
 app_version: 2.3.3.0
 
-driver:
-  name: lightning-server
-  cores: 4
-  memory: 8g
-  coreLimit: 4500m
+customerdatapvc: #{customerdatapvc}# #choose a name for your PVC
+storageclassname: #{storageclassname}# #Specify the storage class name that you created for your tanzu NFS
 
 secret:
   dockerhubcred : dockerhubcred
@@ -26,6 +23,12 @@ serviceaccount :
   name : zetaris-sa
   role : edit
 
+#Make sure these specs corresponds to the cluster size
+driver:
+  name: lightning-server
+  cores: 4
+  memory: 8g
+  coreLimit: 4500m
 executor :
   name : lightning-exec
   memory : 8g
@@ -34,6 +37,7 @@ executor :
   maxExecutors: 3
   minExecutors: 2
 
+#Modify this part from postgres
 postgres:
   METASTORE_JDBC_URL: jdbc:postgresql://#{PostgresIP}#:5432/metastore?sslmode=require
   AUDIT_LOG_JDBC_URL: jdbc:postgresql://#{PostgresIP}#:5432/audit_log?sslmode=require

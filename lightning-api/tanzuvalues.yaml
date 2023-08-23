@@ -18,7 +18,7 @@ secret:
   dockerhubcred : dockerhubcred
 
 claims:
-  data: external-nfs-pvc
+  data: #{customerdatapvc}# #user same pvc as specified in lightning-server
 
 db:
   METASTORE_DATABASE_URL: jdbc:postgresql://#{postgresip}#:5432/metastore?sslmode=require&user=#{dbusername}#&password=#{dbpassword}#
