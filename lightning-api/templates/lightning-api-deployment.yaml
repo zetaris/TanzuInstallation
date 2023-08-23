@@ -44,7 +44,7 @@ spec:
               name: lightning-customer-data-volume
   
       imagePullSecrets:
-        - name: {{ .Values.secret.acrauth }}
+        - name: {{ .Values.secret.dockerhubcred }}
       volumes:
         - name: password-security-volume
           secret:

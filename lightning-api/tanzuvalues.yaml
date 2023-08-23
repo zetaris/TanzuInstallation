@@ -11,11 +11,11 @@ dnsdomain: #{dnsdomain}#
 clusterissuer: local-ca-issuer
 
 api:
-  image : zetregistry.azurecr.io/lightning-api:main-2.3.2.0-c663958ab30a4d6a62a3e124312343e3f2d655e7
+  image : zetaris/lightning-api:main-2.3.3.0-e2c32dedf314b2d781c8649826957523c369b551
   lightning_api_deploy_mode: internal
 
 secret:
-  acrauth : acrcred
+  dockerhubcred : dockerhubcred
 
 claims:
   data: external-nfs-pvc

@@ -10,7 +10,7 @@ lightning_home: /home/zetaris
 deployment:
   name : lightning-server
   sparkversion: 3.3.2
-  image : zetregistry.azurecr.io/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
+  image : zetaris/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
 app_version: 2.3.3.0
 
 driver:
@@ -20,7 +20,7 @@ driver:
   coreLimit: 4500m
 
 secret:
-  acrauth : acrcred
+  dockerhubcred : dockerhubcred
   
 serviceaccount :
   name : zetaris-sa

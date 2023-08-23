@@ -13,7 +13,7 @@ dnsdomain: #{dnsdomain}#
 clusterissuer: local-ca-issuer
 
 gui:
-  image : zetregistry.azurecr.io/lightning-gui:main-2.3.2.0-83e9c327e2361b34399554fec875a8e9048dbd54
+  image : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
 
 ndp: 
   username : admin@default.com
@@ -21,7 +21,7 @@ ndp:
   secret : lightning-server-secret
 
 secret:
-  acrauth : acrcred
+  dockerhubcred : dockerhubcred
 
 claims:
   data: external-nfs-pvc

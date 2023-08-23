@@ -10,7 +10,7 @@ spec:
   image: {{ .Values.deployment.image}}
   imagePullPolicy: IfNotPresent
   imagePullSecrets:
-    - {{ .Values.secret.acrauth }}
+    - {{ .Values.secret.dockerhubcred }}
   restartPolicy:
     type: Always
   mainClass: org.apache.spark.sql.hive.thriftserver.LightningHiveServer2
