@@ -9,6 +9,6 @@ solrimage : zetaris/lightning-solr:8.6.0
 solrreplicas : 1
 registrysecretname: dockerhubcred
 
-clusterissuername: local-ca-issuer 
+clusterissuername: local-ca-issuer
 certsecret: local-ca-secret #secret containing CA certificate
 
