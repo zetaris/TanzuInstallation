@@ -1,0 +1,13 @@
+nfs:
+  # The NFS server endpoint that we got from vSAN FS
+  server: vsan-fs01.tanzu.lab
+  # The NFS share mount path from vSAN FS
+  path: /share01
+storageClass:
+  # The name of the StorageClass to be created on the K8s cluster to allow provisioning of RWM volumes from the share
+  name: nfs-external
+  # The accessMode that we want to be created from these subvolumes (ReadWriteMany allows multiple containers to mount it at once)
+  accessModes: ReadWriteMany
+podSecurityPolicy:
+  # Enabling the pod security policy allows it to run on TKGS clusters out of the box
+  enabled: true
