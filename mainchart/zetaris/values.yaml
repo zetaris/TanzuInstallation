@@ -11,26 +11,18 @@ postgres:
   DB_PASSWORD: #{DB_PASSWORD}#
 
 ndpusername: admin@default.com
-ndppassword: #{ndppassword}#
+ndppassword: #{ndppassword}# #ask zetaris to provide this ndp password (Will be automated for next version)
 
 clusterissuer: letsencrypt-enterprise
 #certsecret: local-ca-secret #secret containing CA certificate
 
-#Enable this part if you have custom PVC and storage class
+#Enable this part if you have custom PVC and storage class (should be enabled for tanzu)
 pvc:
-  enabled: false
+  enabled: true
   customerdatapvc: custdatavolume
   storageclassname: #{storageclassname}#
-  
-#Enable this part if you are using azure file shares
-azure:
-  enabled: false
-  storageaccountsecret : azstasecret
-  storageaccountname : #{storageaccountname}#
-  storageaccountkey : #{storageaccountkey}#
-  storageaccountsharename : cusdatashare
 
-#Add these 2 values for the URL https://ui.deploymentname.dnsdomain
+#Add these 2 values for to access Zetaris UI at the following URL: https://ui.deploymentname.dnsdomain
 dnsdomain: #{dnsdomain}#
 deploymentname : #{deploymentname}#
 
@@ -38,14 +30,18 @@ serviceaccount :
   name : zetaris-sa
   role : edit
 
+#get these values from newly generated SSL keys using this command:
+#privatekeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"private_key.der\"')
+#publickeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"public_key.der\"')
 privatekeyder: #{privatekeyder}#
 publickeyder: #{publickeyder}#
 
-#Specify this registry secret config to pull image from zetaris repository
+#Specify this registry secret config to pull image from zetaris repository (provided by zetaris)
 registrysecret:
   name: dockerhubcred
   config: #{config}#
 
+#use this config to enable GPU parameters
 gpuenabled: false
 
 ### lightning-server

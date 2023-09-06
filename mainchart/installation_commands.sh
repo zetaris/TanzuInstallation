@@ -28,7 +28,7 @@ openssl rsa -in private_key.pem -pubout -outform DER -out public_key.der
 
 #create namespace and secret
 kubectl create namespace $namespace
-kubectl create secret generic lightning-password-security-encryption-secret
+kubectl create secret generic passwordsecurity
 --from-file=private_key.der --from-file=public_key.der –-namespace $namespace
 
 #Install NFS
