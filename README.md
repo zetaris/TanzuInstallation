@@ -45,7 +45,7 @@ helm repo update \
 kubectl create namespace infra \
 helm install nfs-subdir-external-provisioner --namespace infra nfs-subdir-external-provisioner/nfs-subdir-external-provisioner -f nfsvalues.yaml
 
-# install Zetaris => Modify the main chart/zetaris/values file
+# install Zetaris
 
 Modify all values file for server, api, ui, solr and airflow (single values file and chart coming in next release) \
 #use bash script run to deploy   \ 
