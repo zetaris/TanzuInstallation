@@ -1,0 +1,28 @@
+{{- if .Values.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: solrcontent-pvc
+spec:
+  storageClassName: {{ .Values.storageclassname }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+{{- end }}
+
+---
+{{- if .Values.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: solrmetadata-pvc
+spec:
+  storageClassName: {{ .Values.storageclassname }}
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 3Gi
+{{- end }}

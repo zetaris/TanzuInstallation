@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.gui.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.gui.name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.gui.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.gui.name }}
+    spec:
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+        - name: {{ .Values.gui.name }}
+          image: {{ .Values.gui.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: INTERNAL_REST_SERVICE_URL
+              value: http://lightning-api-svc
+            - name: REST_SERVICE_URL
+              value: https://api.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
+            - name: LIGHTNING_SERVER_URL
+              value: jdbc:zetaris:lightning@lightning-driver-svc:10000
+            - name: APACHE_AIRFLOW_URL
+              value: https://airflow.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
+          envFrom:
+            - secretRef:
+                name: lightning-gui-secret
+            - secretRef:
+                name: lightning-gui-sso-env-secret
+            - configMapRef:
+                name: lightning-general-config
+          ports:
+            - containerPort: 9001
+          resources:
+              limits:
+                cpu: {{ .Values.gui.limits.cpu }}
+              requests:
+                cpu: {{ .Values.gui.requests.cpu }}
+          volumeMounts:
+            - name: lightning-gui-conf-volume
+              mountPath: /home/zetaris/lightning-gui/conf
+            - name: lightning-customer-data-volume
+              mountPath: /home/zetaris/customer-data
+      imagePullSecrets:
+        - name: {{ .Values.registrysecret.name }}
+      volumes:
+        - name: lightning-gui-conf-volume
+          configMap:
+            name: lightning-gui-config
+        {{- if .Values.pvc.enabled }}
+        - name: lightning-customer-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.customerdatapvc }}
+        {{- end }}
+        {{- if .Values.azure.enabled }}
+        - name: lightning-customer-data-volume
+          csi:
+            driver: file.csi.azure.com
+            volumeAttributes:
+              secretName: {{ .Values.azure.storageaccountsecret }}
+              shareName: {{ .Values.azure.storageaccountsharename }}
+              mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
+        {{- end }}

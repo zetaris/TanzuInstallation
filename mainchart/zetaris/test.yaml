@@ -1,0 +1,101 @@
+###
+#Values for Zetaris App
+
+namespace : test
+
+dnsdomain: enterprise.zetaris.com
+deploymentname : trialtest
+
+#Modify this part from postgres
+postgres:
+  PostgreSQLHost: zetarisdb.postgres.database.azure.com
+  JDBC_DRIVER_CLASS: org.postgresql.Driver
+  HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+  DB_USERNAME: zetaris
+  DB_PASSWORD: xfd_P*55word_pxxt
+
+ndpusername: admin@default.com
+ndppassword: 9Ly3@UBmo8Nw
+
+publickeyder: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwDH3vsIsoAjif0C7N7Z6dZZ4h/GzlqUMUYJvTxw0+XWUhOWoZbaJNr9qPq0lI+1jgTiXfVJ/YtfoK60drOaKqyMFBi282m9A7DuF+0fsBuq1muwuI5taafR5zSXKNqxQlzNRP0Q+GmEkpn3h/uV6+yq9HGIB/Oy+072JLAq2oFL+ioUboBO8DJ6w1nLpBI6+j0233QTWAKpqmBfYfGwoB9FQg8ibvba1NddZ9GzDg27U508VqSZcfl5m37yYTHw1A17tL+/AoCgb4vdQsXmQGufDDR35BF4/1WGNf1tzosokhZDhYW3VcPaA9q8i18hJvZtzb1g6C0n5w/AmqwDRJwIDAQAB"
+privatekeyder: "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDAMfe+wiygCOJ/QLs3tnp1lniH8bOWpQxRgm9PHDT5dZSE5ahltok2v2o+rSUj7WOBOJd9Un9i1+grrR2s5oqrIwUGLbzab0DsO4X7R+wG6rWa7C4jm1pp9HnNJco2rFCXM1E/RD4aYSSmfeH+5Xr7Kr0cYgH87L7TvYksCragUv6KhRugE7wMnrDWcukEjr6PTbfdBNYAqmqYF9h8bCgH0VCDyJu9trU111n0bMODbtTnTxWpJlx+XmbfvJhMfDUDXu0v78CgKBvi91CxeZAa58MNHfkEXj/VYY1/W3OiyiSFkOFhbdVw9oD2ryLXyEm9m3NvWDoLSfnD8CarANEnAgMBAAECggEAA2efNPDpq3gc0xZJesYvyy98OSROAygvXK5L3IHqalTr6aLL5eli6uZfMncMxmMpNRvUizLP8OdURJnPgcWfxUJcj2x2AQShiM3RJM90XfcAepsegiD5bBEZq0m1GFzbHKKbGNzToNIBvTVTsJlOIW7zZLJTyLBE/SlJac9SxupJm/lN17Y7KeAJsPCPpvz13Cl4ydALHGdB8vyOAl4+y+FDFuDHqOlyltWYyhzzf8+/6FxcbDLGLOL3HTWyIoVOgb8Xn2nryuEayEv8JoXq3ik0C8jfgFTqyX0sh5i9Pezjy4L+Rr/2wpd/YUm561Z4WxKrKhBjFKRfC9Vwqwx5AQKBgQDoaE55zB2AmSR1cnd6HF4F2WYDtmrvgSpolyePNTqiJDyStEAYz14Uv3OsLd4JxF067RlQchNi0D3uE3xvaX//3tboNrlXnMc0y4P43eB998M3bffSVUG8H+Nx/TMFew0y4udsAnwYJW7T4uWQI9kQh/qOecjZrMI/S52pTNbVgQKBgQDTtKTsIgCfiNJOlDdHUQNVBIzebIlhN8Gjk3WwfSjjIfgxisQl8ruFR2HG+f246qw7zLpWnxtFm1p2jeQiqjgtadtJb/Egu70lZ4sO8x1IzcsyiuGDP6q15LAoIKNIvofdez09a64ndAuKgZKfekxXhMhPvW59eAIspMGCxcSKpwKBgH9sEPq+ar6DOHYcWF1fCD30v/XxIhhGnVXS6iGecZNMgtl8clgn+dEuVuFkFIUOYH9aV7K/mNloi0vo6yS6ly9WokWXG29pyd6sZqMgI2FtYl8Vr/ZmQDBA25c31619lfL8bR3PDvK+M1GA6ZRp0y05IKrVIsYV7jp93udf9boBAoGARip0EtM+M6HsWiDjpV5jZVUpvzpn2fHZ2vYvpnwFBiqnEPx2AEHQBt9et8z5W8VjqjozdCwtpMdVlz914ktabSrNhCx21auDiBcmTqEjDpMuiqTfE1oRoVGXVOVkWOLVMwH6jRXYVbkvbgt95h9pmAQpQ8x8B1e0GMnOXSJg/rcCgYA+nUFqjP5Cu1yagz5ugNAy5/vhVaQAkspt9SKH7gof8sfdEltbSaRwl+hiq+08aSy6Zy1H/+xyu4vpPLHwZM+/mGoTlXT91ZMcYZOZAbsfxsoyeWRc1thbNG0Uta7ePqJrju9PGppyoFtU6yvp4uoBiYfbWQ/iljB+ppgcWdp/8Q=="
+
+clusterissuer: letsencrypt-enterprise
+#certsecret: local-ca-secret #secret containing CA certificate
+
+#Enable this part if you have custom PVC and storage class
+pvc:
+  enabled: false
+  customerdatapvc: custdatavolume
+  storageclassname: file.csi.azure.com
+
+#Enable this part if you are using azure file shares
+azure:
+  enabled: true
+  storageaccountsecret : azstasecret
+  storageaccountname : zetarisorgstorage
+  storageaccountkey : S1CzmPymysxJgbxWFNMzjaTNHi4yrGMmKxX6ZTs75vgkVizSYhFmC8m4Qun8da6jWF2poU8W0vj2+ASt0raB6Q==
+  storageaccountsharename : cusdatashare
+
+serviceaccount :
+  name : zetaris-sa
+  role : edit
+
+registrysecret:
+  name: dockerhubcred
+  config: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJ6ZXRhcmlzZGV2b3BzIiwicGFzc3dvcmQiOiJCZnNENGtRXHUwMDNjakxNLHFcdTAwM2NjS104XHUwMDI2LiIsImVtYWlsIjoiaGFyc2hhbC52YWlkeWFAemV0YXJpcy5jb20iLCJhdXRoIjoiZW1WMFlYSnBjMlJsZG05d2N6cENabk5FTkd0UlBHcE1UU3h4UEdOTFhUZ21MZz09In19fQ==
+
+gpuenabled: false
+
+
+### lightning-server
+server:
+  name : lightning-server
+  lightning_home: /home/zetaris
+  sparkversion: 3.3.2
+  image : zetaris/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
+  app_version: 2.3.3.0
+
+  #Make sure these specs corresponds to the cluster size
+  driver:
+    cores: 2
+    memory: 8g
+    coreLimit: 4500m
+  executor :
+    memory : 8g
+    cores: 1
+    initialExecutors: 1
+    maxExecutors: 3
+    minExecutors: 2
+
+### lightning-gui
+gui:
+  name : lightning-gui
+  namespace : zetaris
+  image : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
+  calendly_url: https://calendly.com/d/x4w-yk4-q8b/zetaris-customer-success-touchpoint 
+  requests:
+    cpu: "1"
+
+### solr
+solr:
+  name : lightning-solr
+  namespace: zetaris
+  solrimage : zetaris/lightning-solr:8.6.0
+  solrreplicas : 1
+
+#### api
+api:
+  name : lightning-api
+  namespace : zetaris
+  replicas : 1
+  image : zetaris/lightning-api:main-2.3.3.0-e2c32dedf314b2d781c8649826957523c369b551
+  lightning_api_deploy_mode: internal
+
+
+#airflow
+# Default values for lightning-gui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+airflow:
+  namespace : test

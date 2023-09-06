@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.api.name }}
+  name: {{ .Values.api.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.api.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.api.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.api.name }}
+    spec:
+      containers:
+        - name: {{ .Values.api.name }}
+          image: {{ .Values.api.image }}
+          imagePullPolicy: Always
+          env:
+            - name: ALLOWED_ORIGINS
+              value: https://ui.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
+            - name: METASTORE_DATABASE_URL
+              value: jdbc:postgresql://{{ .Values.postgres.PostgreSQLHost }}:5432/metastore?sslmode=require&user={{ .Values.postgres.DB_USERNAME }}&password={{ .Values.postgres.DB_PASSWORD }}
+            - name: AUDIT_LOG_DATABASE_URL
+              value: jdbc:postgresql://{{ .Values.postgres.PostgreSQLHost }}:5432/audit_log?sslmode=require&user={{ .Values.postgres.DB_USERNAME }}&password={{ .Values.postgres.DB_PASSWORD }}
+            - name: LIGHTNING_SERVER_URL
+              value: jdbc:zetaris:lightning@lightning-server-svc:10000
+            - name: LIGHTNING_API_DEPLOY_MODE
+              value: {{ .Values.api.lightning_api_deploy_mode }}
+            - name: ENCRYPTION_LOCAL_PRIVATE_KEY_PATH
+              value: /home/zetaris/lightning/password-security/private_key.der
+            - name: ENCRYPTION_LOCAL_PUBLIC_KEY_PATH
+              value: /home/zetaris/lightning/password-security/public_key.der
+          ports:
+            - containerPort: 8888
+          volumeMounts:
+            - name: password-security-volume
+              mountPath: /home/zetaris/lightning/password-security
+              readOnly: true
+            - mountPath: /home/zetaris/customer-data
+              name: lightning-customer-data-volume
+      imagePullSecrets:
+        - name: {{ .Values.registrysecret.name }}
+      volumes:
+        - name: password-security-volume
+          secret:
+            defaultMode: 0606
+            secretName: lightning-password-security-encryption-secret
+        - name: lightning-customer-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.customerdatapvc }}

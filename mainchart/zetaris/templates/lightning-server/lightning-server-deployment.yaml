@@ -1,0 +1,149 @@
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: {{ .Values.server.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  type: Scala
+  sparkVersion: {{ .Values.server.sparkversion }}
+  mode: cluster
+  image: {{ .Values.server.image}}
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - {{ .Values.registrysecret.name }}
+  restartPolicy:
+    type: Always
+  mainClass: org.apache.spark.sql.hive.thriftserver.LightningHiveServer2
+  mainApplicationFile: local:///home/zetaris/lightning/lib/com.zetaris.ndp-sql-{{ .Values.server.app_version }}.jar
+  arguments:
+    - spark-internal
+  sparkConf:
+    {{- if eq .Values.gpuenabled "true" }}
+    spark.driver.extraClassPath: /home/zetaris/lightning/conf:/home/zetaris/lightning/other/*:/home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar
+    spark.executor.extraClassPath: /home/zetaris/lightning/other/*:/home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar
+    {{- else }}
+    spark.driver.extraClassPath: /home/zetaris/lightning/conf:/home/zetaris/lightning/other/*
+    spark.executor.extraClassPath: /home/zetaris/lightning/other/*
+    {{- end }}
+    spark.driver.extraJavaOptions:
+      -Djavax.net.ssl.trustStore=/home/zetaris/customer-data/certificates/cacerts
+      -Djavax.net.ssl.trustStorePassword=changeit
+    spark.executor.extraJavaOptions:
+      -Djavax.net.ssl.trustStore=/home/zetaris/customer-data/certificates/cacerts
+      -Djavax.net.ssl.trustStorePassword=changeit -XX:+UseCompressedOops -XX:+UseG1GC
+      -Dorg.xerial.snappy.use.systemlib=true
+      -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so
+    spark.hadoop.mapreduce.fileoutputcommitter.algorithm.version: "2"
+    spark.kubernetes.file.upload.path: /home/zetaris/lightning/conf/krb5.conf
+    spark.metrics.conf: /home/zetaris/lightning/conf/metrics.properties
+    spark.ui.retainedtasks: "100"
+    spark.ui.retainedJobs: "100"
+    spark.ui.retainedStages: "100"
+    spark.sql.ui.retainedExecutions: "100"
+    spark.streaming.ui.retainedBatches: "100"
+    {{- if eq .Values.gpuenabled "true" }}
+    spark.executor.resource.gpu.amount: "1"
+    spark.executor.resource.gpu.vendor: "nvidia.com"
+    spark.executor.resource.gpu.discoveryScript: /home/zetaris/lightning/bin/getGpusResources.sh
+    spark.plugins: "com.nvidia.spark.SQLPlugin"
+    spark.rapids.sql.concurrentGpuTasks: "2"  
+    spark.task.resource.gpu.amount: "1"
+    spark.rapids.memory.pinnedPool.size: "2G"
+    spark.rapids.memory.host.spillStorageSize: "4g" 
+    spark.sql.shuffle.partitions: "20"
+    {{- end }}
+  driver:
+    javaOptions: -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so -Dorg.xerial.snappy.use.systemlib=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/spark/logs/executor_heap_dump.log -XX:+UseG1GC -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:+ExplicitGCInvokesConcurrent -verbose:gc -XX:+PrintHeapAtGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -Xloggc:/opt/spark/logs/executor_gc_log.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=9 -XX:GCLogFileSize=20M
+    cores: {{ .Values.server.driver.cores }}
+    memory: {{ .Values.server.driver.memory }}
+    envFrom:
+      - secretRef:
+          name: lightning-server-secret
+      - configMapRef:
+          name: lightning-general-config
+    labels:
+      version: {{ .Values.server.sparkversion }}
+      app: lightning-server
+    serviceAccount: {{ .Values.serviceaccount.name }}
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001
+      runAsGroup: 1001
+    volumeMounts:
+      - name: lightning-server-conf-volume
+        mountPath: /home/zetaris/lightning/conf
+      - name: lightning-customer-data-volume
+        mountPath: /home/zetaris/customer-data
+      - name: password-security-volume
+        mountPath: /home/zetaris/lightning/password-security
+  executor:
+    {{- if eq .Values.gpuenabled "true" }}
+    gpu:
+      name: nvidia.com/gpu
+      quantity: 1
+    {{- end }}
+    javaOptions: -Dorg.xerial.snappy.lib.path=/usr/lib/libsnappyjava.so -Dorg.xerial.snappy.use.systemlib=true -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/spark/logs/executor_heap_dump.log -XX:+UseG1GC -XX:+PerfDisableSharedMem -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:+ExplicitGCInvokesConcurrent -verbose:gc -XX:+PrintHeapAtGC -XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -Xloggc:/opt/spark/logs/executor_gc_log.log -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=9 -XX:GCLogFileSize=20M
+    cores: {{ .Values.server.executor.cores }}
+    memory: {{ .Values.server.executor.memory }}
+    envFrom:
+      - secretRef:
+          name: lightning-server-secret
+      - configMapRef:
+          name: lightning-general-config
+    labels:
+      version: {{ .Values.server.sparkversion }}
+      app: lightning-executor
+    podSecurityContext:
+      fsGroup: 1001
+      runAsUser: 1001    
+      runAsGroup: 1001
+    volumeMounts:
+      - name: lightning-server-conf-volume
+        mountPath: /home/zetaris/lightning/conf
+      - name: lightning-customer-data-volume
+        mountPath: /home/zetaris/customer-data
+      - name: password-security-volume
+        mountPath: /home/zetaris/lightning/password-security
+  ### Use dynamicAllocation that can replace instances field in executor
+  dynamicAllocation:
+    enabled: true
+    initialExecutors: {{ .Values.server.executor.initialExecutors }}
+    maxExecutors: {{ .Values.server.executor.maxExecutors }}
+    minExecutors: {{ .Values.server.executor.minExecutors }}
+  deps:
+    files:
+      - local:///home/zetaris/lightning/conf/metrics.properties
+      - local:///home/zetaris/lightning/conf/meta_store.properties
+    jars:
+      {{- .Files.Get "jarfile.yaml" | nindent 6 }}
+      - local:///home/zetaris/lightning/lib/com.zetaris.ndp-solr-{{ .Values.app_version }}.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.ndp-sql-{{ .Values.app_version }}.jar
+      - local:///home/zetaris/lightning/lib/com.zetaris.zetaris-ndp-{{ .Values.app_version }}.jar
+      {{- if eq .Values.gpuenabled "true" }}
+      - local:///home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar
+      {{- end }}
+  volumes:
+    - name: lightning-server-conf-volume
+      configMap:
+        name: lightning-server-config
+    - name: password-security-volume
+      secret:
+        defaultMode: 0400
+        secretName: lightning-password-security-encryption-secret
+    {{- if .Values.pvc.enabled }}
+    - name: lightning-customer-data-volume
+      persistentVolumeClaim:
+        claimName: {{ .Values.pvc.customerdatapvc }}
+    {{- end }}
+    {{- if .Values.azure.enabled }}
+    - name: lightning-customer-data-volume
+      csi:
+        driver: file.csi.azure.com
+        volumeAttributes:
+          secretName: {{ .Values.azure.storageaccountsecret }}
+          shareName: {{ .Values.azure.storageaccountsharename }}
+          mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
+    {{- end }}
+  monitoring:
+    exposeDriverMetrics: true
+    exposeExecutorMetrics: true
