@@ -31,15 +31,15 @@ spec:
             - name: LIGHTNING_SERVER_URL
               value: jdbc:zetaris:lightning@lightning-server-svc:10000
             - name: ZFILESYSTEM_STAGING
-              value: {{ .Values.filesystem_staging }}
+              value: /home/zetaris/customer-data
             - name: CALENDLY_URL
-              value: {{ .Values.calendly_url }}        
+              value: https://calendly.com/d/x4w-yk4-q8b/zetaris-customer-success-touchpoint
             - name: SHOW_BUILD_HASH
-              value: {{ .Values.show_build_hash | quote }}
+              value: "false"
             - name: APACHE_AIRFLOW_URL
               value: https://airflow.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
             - name: ENABLE_HUBSPOT_TRACKING
-              value: {{ .Values.enable_hubspot_tracking | quote }}
+              value: "false"
           envFrom:
             - secretRef:
                 name: lightning-server-secret
