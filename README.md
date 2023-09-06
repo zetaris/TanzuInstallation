@@ -1,11 +1,11 @@
 # TanzuInstallation
 
 # Ingress nginx
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm upgrade --install lightning-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --version 4.0.18 --set rbac.create=true --set rbac.createRole=true --set rbac.createClusterRole=true --set-string controller.config.proxy-body-size=100m --set-string controller.config.server-tokens=false --set controller.config.generate-request-id=\"false\" 
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx \
+helm upgrade --install lightning-ingress ingress-nginx/ingress-nginx --namespace ingress-nginx --create-namespace --version 4.0.18 --set rbac.create=true --set rbac.createRole=true --set rbac.createClusterRole=true --set-string controller.config.proxy-body-size=100m --set-string controller.config.server-tokens=false --set controller.config.generate-request-id=\"false\" \
 
 # Spark Operator
-helm repo add spark-operator https://googlecloudplatform.github.io/spark-on-k8s-operator
+helm repo add spark-operator https://googlecloudplatform.github.io/spark-on-k8s-operator \
 helm install spark-operator spark-operator/spark-operator --namespace spark-operator --create-namespace --set webhook.enable=true --set resourceQuotaEnforcement.enable=true
 
 # Cert Manager
