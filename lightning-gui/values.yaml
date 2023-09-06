@@ -1,0 +1,21 @@
+# Default values for lightning-gui.
+name : lightning-gui
+namespace : zetaris
+replicas : 1
+deploymentname: #{deploymentname}# #name of the app, URL will be ui.deploymentname.dnsdomain
+dnsdomain: #{dnsdomain}#
+clusterissuer: local-ca-issuer
+
+gui:
+  image : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
+
+#default admin credentials
+ndp: 
+  password : 9Ly3@UBmo8Nw #There is no need to modify this password for this version
+
+secret:
+  dockerhubcred : dockerhubcred
+
+#this should be the same name as the PVC created for the server
+claims:
+  data: #{customerdatapvc}#

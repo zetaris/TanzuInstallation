@@ -1,0 +1,29 @@
+# Default values for lightning-gui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+name : lightning-api
+namespace : zetaris
+replicas : 1
+deploymentname: #{deploymentname}#
+dnsdomain: #{dnsdomain}#
+clusterissuer: local-ca-issuer
+
+api:
+  image : zetaris/lightning-api:main-2.3.3.0-e2c32dedf314b2d781c8649826957523c369b551
+  lightning_api_deploy_mode: internal
+
+secret:
+  dockerhubcred : dockerhubcred
+
+claims:
+  data: #{customerdatapvc}# #user same pvc as specified in lightning-server
+
+db:
+  METASTORE_DATABASE_URL: jdbc:postgresql://#{postgresip}#:5432/metastore?sslmode=require&user=#{dbusername}#&password=#{dbpassword}#
+  AUDIT_LOG_DATABASE_URL: jdbc:postgresql://#{postgresip}#:5432/audit_log?sslmode=require&user=#{dbusername}#&password=#{dbpassword}#
+
+encryption:
+  encryption_local_pk_path: /home/zetaris/lightning/password-security/private_key.der
+  encryption_local_pubk_path: /home/zetaris/lightning/password-security/public_key.der
