@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.solr.name }}
+  name: {{ .Values.solr.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.solr.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.solr.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.solr.name }}
+    spec:
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      containers:
+        - name: {{ .Values.solr.name }}
+          image: {{ .Values.solr.image }}
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: /home/zetaris/lightning-solr-8.6.0/server/solr/cores/metadata/data
+            name: solr-metadata-pv
+          - mountPath: /home/zetaris/lightning-solr-8.6.0/server/solr/cores/content/data
+            name: solr-content-pv
+          ports:
+            - containerPort: 8983
+              protocol: TCP
+      volumes:
+      {{- if .Values.pvc.enabled }}
+      - name: solr-content-pv
+        persistentVolumeClaim:
+          claimName: solrcontent-pvc
+      - name: solr-metadata-pv
+        persistentVolumeClaim:
+          claimName: solrmetadata-pvc
+      {{- end }}
+      {{- if .Values.azure.enabled }}
+      - name: solr-content-pv
+        csi:
+          driver: file.csi.azure.com
+          volumeAttributes:
+            secretName: {{ .Values.azure.storageaccountsecret }}
+            shareName: solr
+            folderName: content
+            mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
+      - name: solr-metadata-pv
+        csi:
+          driver: file.csi.azure.com
+          volumeAttributes:
+            secretName: {{ .Values.azure.storageaccountsecret }}
+            shareName: solr
+            folderName: metadata
+            mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
+      {{- end }}
+      imagePullSecrets:
+        - name: {{ .Values.registrysecret.name }}

@@ -1,0 +1,96 @@
+###
+#Values for Zetaris App
+namespace : zetaris
+
+#Modify this part from postgres
+postgres:
+  PostgreSQLHost: #{PostgresIP}#
+  JDBC_DRIVER_CLASS: org.postgresql.Driver
+  HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+  DB_USERNAME: #{DB_USERNAME}#
+  DB_PASSWORD: #{DB_PASSWORD}#
+
+ndpusername: admin@default.com
+ndppassword: #{ndppassword}# #ask zetaris to provide this ndp password (Will be automated for next version)
+
+clusterissuer: #{letsencrypt-enterprise/localca}#
+#certsecret: local-ca-secret #secret containing CA certificate if using custom CA
+
+#Enable this part if you have custom PVC and storage class (should be enabled for tanzu)
+pvc:
+  enabled: true
+  customerdatapvc: custdatavolume
+  storageclassname: #{storageclassname}#
+
+#Add these 2 values for to access Zetaris UI at the following URL: https://ui.deploymentname.dnsdomain
+dnsdomain: #{dnsdomain}#
+deploymentname : #{deploymentname}#
+
+serviceaccount :
+  name : zetaris-sa
+  role : edit
+
+#get these values from newly generated SSL keys using this command:
+#privatekeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"private_key.der\"')
+#publickeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"public_key.der\"')
+privatekeyder: #{privatekeyder}#
+publickeyder: #{publickeyder}#
+
+#Specify this registry secret config to pull image from zetaris repository (provided by zetaris)
+registrysecret:
+  name: dockerhubcred
+  config: #{config}#
+
+#use this config to enable GPU parameters
+gpuenabled: false
+
+### lightning-server
+server:
+  name : lightning-server
+  lightning_home: /home/zetaris
+  sparkversion: 3.3.2
+  image : zetaris/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
+  app_version: 2.3.3.0
+
+  #Make sure these specs corresponds to the cluster size
+  driver:
+    cores: 4
+    memory: 8g
+    coreLimit: 4500m
+  executor :
+    memory : 8g
+    cores: 2
+    initialExecutors: 2
+    maxExecutors: 3
+    minExecutors: 2
+
+### lightning-gui
+gui:
+  name : lightning-gui
+  namespace : zetaris
+  guiimage : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
+  limits:
+    cpu: "4" 
+  requests:
+    cpu: "2" 
+
+### solr
+solr:
+  name : lightning-solr
+  namespace: zetaris
+  image : zetaris/lightning-solr:8.6.0
+  replicas : 1
+
+
+#### api
+api:
+  name : lightning-api
+  namespace : zetaris
+  replicas : 1
+  image : zetaris/lightning-api:main-2.3.3.0-e2c32dedf314b2d781c8649826957523c369b551
+  lightning_api_deploy_mode: internal
+
+
+#airflow
+airflow:
+  namespace : #{airflownamespace}#
