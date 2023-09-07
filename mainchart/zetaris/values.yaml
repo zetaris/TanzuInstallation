@@ -13,8 +13,8 @@ postgres:
 ndpusername: admin@default.com
 ndppassword: #{ndppassword}# #ask zetaris to provide this ndp password (Will be automated for next version)
 
-clusterissuer: letsencrypt-enterprise
-#certsecret: local-ca-secret #secret containing CA certificate
+clusterissuer: #{letsencrypt-enterprise/localca}#
+#certsecret: local-ca-secret #secret containing CA certificate if using custom CA
 
 #Enable this part if you have custom PVC and storage class (should be enabled for tanzu)
 pvc:
@@ -69,7 +69,6 @@ gui:
   name : lightning-gui
   namespace : zetaris
   guiimage : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
-  calendly_url: https://calendly.com/d/x4w-yk4-q8b/zetaris-customer-success-touchpoint
   limits:
     cpu: "4" 
   requests:
