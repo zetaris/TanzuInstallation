@@ -23,20 +23,20 @@
 `kubectl create namespace {yournamespace}` \
 `kubectl create secret generic lightning-password-security-encryption-secret --from-file=private_key.der --from-file=public_key.der –-namespace {yournamespace}` \
 
-# NFS confiuration:
+# NFS configuration:
 
 Modify the nfs.values.yaml to point to your NFS file share and your sharename, and specify your storage class name
 
-## install nfs with this nfsvalues file
+## Install NFS
 Run the following commands to install the Tanzu NFS provisioner:
 `helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner` \
 `helm repo update` \
 `kubectl create namespace $namespace` \
 `helm install nfs-subdir-external-provisioner --namespace $namespace nfs-subdir-external-provisioner/nfs-subdir-external-provisioner -f nfs.values.yaml`
 
-# install Zetaris
+# Install Zetaris
 
-Modify the zetaris values.yaml file. \
+Modify the zetaris zetaris/values.yaml file with your NFS, clusterissuer and PostgreSQL values. \
 Run this command with "dry-run" to validate the templates. \
 `helm upgrade --install --dry-run zetaris mainchart/zetaris --namespace $namespace -f ./mainchart/zetaris/values.yaml` \ <br>
 
