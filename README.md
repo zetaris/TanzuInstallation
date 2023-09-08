@@ -23,27 +23,16 @@
 `kubectl create namespace {yournamespace}` \
 `kubectl create secret generic lightning-password-security-encryption-secret --from-file=private_key.der --from-file=public_key.der –-namespace {yournamespace}` \
 
-# For Tanzu, create NFS by creating the following file:
+# NFS confiuration:
 
-nfs: \
-  #The NFS server endpoint that we got from vSAN FS \
-  server: vsan-fs01.tanzu.lab \
-  #The NFS share mount path from vSAN FS \
-  path: /share01 \
-storageClass: \
-  #The name of the StorageClass to be created on the K8s cluster to allow provisioning of RWM volumes from the share \
-  name: nfs-external \
-  #The accessMode that we want to be created from these subvolumes (ReadWriteMany allows multiple containers to mount it at once) \
-  accessModes: ReadWriteMany \
-podSecurityPolicy: \
-  #Enabling the pod security policy allows it to run on TKGS clusters out of the box \
-  enabled: true \
+Modify the nfs.values.yaml to point to your NFS file share and your sharename, and specify your storage class name
 
 ## install nfs with this nfsvalues file
-helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner \
-helm repo update \
-kubectl create namespace infra \
-helm install nfs-subdir-external-provisioner --namespace infra nfs-subdir-external-provisioner/nfs-subdir-external-provisioner -f nfsvalues.yaml
+Run the following commands to install the Tanzu NFS provisioner:
+`helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner` \
+`helm repo update` \
+`kubectl create namespace $namespace` \
+`helm install nfs-subdir-external-provisioner --namespace $namespace nfs-subdir-external-provisioner/nfs-subdir-external-provisioner -f nfs.values.yaml`
 
 # install Zetaris
 
@@ -58,5 +47,5 @@ Once deployed, run kubectl get pods -n $namespace to make sure that everything i
 
 # Install Airflow
 `helm repo add apache-airflow https://airflow.apache.org` \
-#modify airflow.values.yaml then install \
+#modify the airflow.values.yaml then install \
 `helm upgrade --install airflow apache-airflow/airflow -f ./airflow/airflowvalues.yaml --namespace airflow --create-namespace`
