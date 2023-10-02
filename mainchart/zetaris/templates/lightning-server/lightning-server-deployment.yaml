@@ -135,15 +135,6 @@ spec:
       persistentVolumeClaim:
         claimName: {{ .Values.pvc.customerdatapvc }}
     {{- end }}
-    {{- if .Values.azure.enabled }}
-    - name: lightning-customer-data-volume
-      csi:
-        driver: file.csi.azure.com
-        volumeAttributes:
-          secretName: {{ .Values.azure.storageaccountsecret }}
-          shareName: {{ .Values.azure.storageaccountsharename }}
-          mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
-    {{- end }}
   monitoring:
     exposeDriverMetrics: true
     exposeExecutorMetrics: true
