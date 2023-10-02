@@ -42,7 +42,7 @@ registrysecret:
   config: #{config}#
 
 #use this config to enable GPU parameters
-gpuenabled: false
+gpuenabled: 'false'
 
 ### lightning-server
 server:
