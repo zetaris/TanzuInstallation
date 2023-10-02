@@ -39,23 +39,5 @@ spec:
         persistentVolumeClaim:
           claimName: solrmetadata-pvc
       {{- end }}
-      {{- if .Values.azure.enabled }}
-      - name: solr-content-pv
-        csi:
-          driver: file.csi.azure.com
-          volumeAttributes:
-            secretName: {{ .Values.azure.storageaccountsecret }}
-            shareName: solr
-            folderName: content
-            mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
-      - name: solr-metadata-pv
-        csi:
-          driver: file.csi.azure.com
-          volumeAttributes:
-            secretName: {{ .Values.azure.storageaccountsecret }}
-            shareName: solr
-            folderName: metadata
-            mountOptions: "dir_mode=0770,file_mode=0770,uid=1001,gid=1001,cache=strict"
-      {{- end }}
       imagePullSecrets:
         - name: {{ .Values.registrysecret.name }}
