@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.pvc.customerdatapvc }}
   namespace: {{ .Values.namespace }}
 spec:
-  storageClassName: {{ .Values.storageclassname }}
+  storageClassName: {{ .Values.pvc.storageclassname }}
   accessModes:
     - ReadWriteMany
   resources:
