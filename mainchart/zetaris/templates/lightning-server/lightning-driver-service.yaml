@@ -3,10 +3,6 @@ kind: Service
 metadata:
   name: lightning-server-svc
   namespace: {{ .Values.namespace }}
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-    service.beta.kubernetes.io/aws-load-balancer-type: external
 spec:
   ports:
     - port: 10000
