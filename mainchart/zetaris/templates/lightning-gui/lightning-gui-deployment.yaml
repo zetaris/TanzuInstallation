@@ -28,7 +28,7 @@ spec:
             - name: REST_SERVICE_URL
               value: https://api.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
             - name: LIGHTNING_SERVER_URL
-              value: jdbc:zetaris:lightning@lightning-driver-svc:10000
+              value: jdbc:zetaris:lightning@lightning-server-svc:10000
             - name: APACHE_AIRFLOW_URL
               value: https://airflow.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
           envFrom:
