@@ -68,7 +68,7 @@ server:
 gui:
   name : lightning-gui
   namespace : zetaris
-  guiimage : zetaris/lightning-gui:main-2.3.3.0-7557a360c1fa9d245b9356d5b8cb07c212b44947
+  guiimage : zetaris/lightning-gui:v2.3.3.0-hotfix-2.3.3.0-4621599af4967eb05680ae6185e8dabd1ff1304d
   limits:
     cpu: "4" 
   requests:
