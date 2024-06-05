@@ -49,8 +49,8 @@ server:
   name : lightning-server
   lightning_home: /home/zetaris
   sparkversion: 3.3.2
-  image : zetaris/lightning-server:main-2.3.3.0-875dca86a9e73180599c41144230ae24eb56e788
-  app_version: 2.3.3.0
+  image : zetaris/lightning-server:v2.3.6.0-hotfix-2.3.6.0-202a1e0f6f7bafcccb2e6ec29b7f3df3fe3be04f
+  app_version: 2.3.6.0
 
   #Make sure these specs corresponds to the cluster size
   driver:
@@ -68,7 +68,7 @@ server:
 gui:
   name : lightning-gui
   namespace : zetaris
-  guiimage : zetaris/lightning-gui:v2.3.3.0-hotfix-2.3.3.0-4621599af4967eb05680ae6185e8dabd1ff1304d
+  guiimage : zetaris/lightning-gui:v2.3.6.0-hotfix-2.3.6.0-f58dac70862ca17587abb6f9eae06b42d8cf945e
   limits:
     cpu: "4" 
   requests:
@@ -87,7 +87,7 @@ api:
   name : lightning-api
   namespace : zetaris
   replicas : 1
-  image : zetaris/lightning-api:main-2.3.3.0-e2c32dedf314b2d781c8649826957523c369b551
+  image : zetaris/lightning-api:v2.3.6.0-hotfix-2.3.6.0-d7ec3be7797f113f13672ee8dc80bbbfd6ae4500
   lightning_api_deploy_mode: internal
 
 
