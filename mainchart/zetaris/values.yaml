@@ -31,10 +31,11 @@ serviceaccount :
   role : edit
 
 #get these values from newly generated SSL keys using this command:
-#privatekeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"private_key.der\"')
-#publickeyder=$(kubectl get secret tempsecret -o json | jq -r '.data.\"public_key.der\"')
-privatekeyder: #{privatekeyder}#
-publickeyder: #{publickeyder}#
+#privatekeyder: #{privatekeyder}#
+#publickeyder: #{publickeyder}#
+
+publickeyder: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwDH3vsIsoAjif0C7N7Z6dZZ4h/GzlqUMUYJvTxw0+XWUhOWoZbaJNr9qPq0lI+1jgTiXfVJ/YtfoK60drOaKqyMFBi282m9A7DuF+0fsBuq1muwuI5taafR5zSXKNqxQlzNRP0Q+GmEkpn3h/uV6+yq9HGIB/Oy+072JLAq2oFL+ioUboBO8DJ6w1nLpBI6+j0233QTWAKpqmBfYfGwoB9FQg8ibvba1NddZ9GzDg27U508VqSZcfl5m37yYTHw1A17tL+/AoCgb4vdQsXmQGufDDR35BF4/1WGNf1tzosokhZDhYW3VcPaA9q8i18hJvZtzb1g6C0n5w/AmqwDRJwIDAQAB"
+privatekeyder: "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDAMfe+wiygCOJ/QLs3tnp1lniH8bOWpQxRgm9PHDT5dZSE5ahltok2v2o+rSUj7WOBOJd9Un9i1+grrR2s5oqrIwUGLbzab0DsO4X7R+wG6rWa7C4jm1pp9HnNJco2rFCXM1E/RD4aYSSmfeH+5Xr7Kr0cYgH87L7TvYksCragUv6KhRugE7wMnrDWcukEjr6PTbfdBNYAqmqYF9h8bCgH0VCDyJu9trU111n0bMODbtTnTxWpJlx+XmbfvJhMfDUDXu0v78CgKBvi91CxeZAa58MNHfkEXj/VYY1/W3OiyiSFkOFhbdVw9oD2ryLXyEm9m3NvWDoLSfnD8CarANEnAgMBAAECggEAA2efNPDpq3gc0xZJesYvyy98OSROAygvXK5L3IHqalTr6aLL5eli6uZfMncMxmMpNRvUizLP8OdURJnPgcWfxUJcj2x2AQShiM3RJM90XfcAepsegiD5bBEZq0m1GFzbHKKbGNzToNIBvTVTsJlOIW7zZLJTyLBE/SlJac9SxupJm/lN17Y7KeAJsPCPpvz13Cl4ydALHGdB8vyOAl4+y+FDFuDHqOlyltWYyhzzf8+/6FxcbDLGLOL3HTWyIoVOgb8Xn2nryuEayEv8JoXq3ik0C8jfgFTqyX0sh5i9Pezjy4L+Rr/2wpd/YUm561Z4WxKrKhBjFKRfC9Vwqwx5AQKBgQDoaE55zB2AmSR1cnd6HF4F2WYDtmrvgSpolyePNTqiJDyStEAYz14Uv3OsLd4JxF067RlQchNi0D3uE3xvaX//3tboNrlXnMc0y4P43eB998M3bffSVUG8H+Nx/TMFew0y4udsAnwYJW7T4uWQI9kQh/qOecjZrMI/S52pTNbVgQKBgQDTtKTsIgCfiNJOlDdHUQNVBIzebIlhN8Gjk3WwfSjjIfgxisQl8ruFR2HG+f246qw7zLpWnxtFm1p2jeQiqjgtadtJb/Egu70lZ4sO8x1IzcsyiuGDP6q15LAoIKNIvofdez09a64ndAuKgZKfekxXhMhPvW59eAIspMGCxcSKpwKBgH9sEPq+ar6DOHYcWF1fCD30v/XxIhhGnVXS6iGecZNMgtl8clgn+dEuVuFkFIUOYH9aV7K/mNloi0vo6yS6ly9WokWXG29pyd6sZqMgI2FtYl8Vr/ZmQDBA25c31619lfL8bR3PDvK+M1GA6ZRp0y05IKrVIsYV7jp93udf9boBAoGARip0EtM+M6HsWiDjpV5jZVUpvzpn2fHZ2vYvpnwFBiqnEPx2AEHQBt9et8z5W8VjqjozdCwtpMdVlz914ktabSrNhCx21auDiBcmTqEjDpMuiqTfE1oRoVGXVOVkWOLVMwH6jRXYVbkvbgt95h9pmAQpQ8x8B1e0GMnOXSJg/rcCgYA+nUFqjP5Cu1yagz5ugNAy5/vhVaQAkspt9SKH7gof8sfdEltbSaRwl+hiq+08aSy6Zy1H/+xyu4vpPLHwZM+/mGoTlXT91ZMcYZOZAbsfxsoyeWRc1thbNG0Uta7ePqJrju9PGppyoFtU6yvp4uoBiYfbWQ/iljB+ppgcWdp/8Q=="
 
 #Specify this registry secret config to pull image from zetaris repository (provided by zetaris)
 registrysecret:
@@ -68,7 +69,7 @@ server:
 gui:
   name : lightning-gui
   namespace : zetaris
-  guiimage : zetaris/lightning-gui:v2.3.6.0-hotfix-2.3.6.0-f58dac70862ca17587abb6f9eae06b42d8cf945e
+  guiimage : zetaris/lightning-gui:v2.3.6.0-hotfix-2.3.6.0-a142194d9c81a6162f3be995a978285b34a6dc24
   limits:
     cpu: "4" 
   requests:

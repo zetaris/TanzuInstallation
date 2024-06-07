@@ -18,6 +18,11 @@ spec:
   arguments:
     - spark-internal
   sparkConf:
+    spark.scheduler.mode: "FAIR"
+    spark.memory.fraction: "0.6"
+    spark.memory.storageFraction: "0.5"
+    spark.kryoserializer.buffer.max: "500m"
+    spark.serializer: "org.apache.spark.serializer.KryoSerializer"
     {{- if eq .Values.gpuenabled "true" }}
     spark.driver.extraClassPath: /home/zetaris/lightning/conf:/home/zetaris/lightning/other/*:/home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar
     spark.executor.extraClassPath: /home/zetaris/lightning/other/*:/home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar

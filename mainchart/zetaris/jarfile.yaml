@@ -47,7 +47,6 @@
 - local:///home/zetaris/lightning/lib/com.microsoft.azure.azure-keyvault-core-1.0.0.jar
 - local:///home/zetaris/lightning/lib/com.microsoft.sqlserver.mssql-jdbc-6.2.1.jre8.jar
 - local:///home/zetaris/lightning/lib/com.mysql.mysql-connector-j-8.0.32.jar
-- local:///home/zetaris/lightning/lib/com.nvidia.rapids-4-spark_2.12-23.06.0.jar
 - local:///home/zetaris/lightning/lib/com.oracle.database.jdbc.ojdbc8-21.9.0.0.jar
 - local:///home/zetaris/lightning/lib/com.teradata.jdbc.terajdbc-20.00.00.06.jar
 - local:///home/zetaris/lightning/lib/com.thoughtworks.paranamer.paranamer-2.8.jar
