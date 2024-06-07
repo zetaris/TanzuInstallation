@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: INTERNAL_REST_SERVICE_URL
-              value: http://lightning-api-svc
+              value: http://lightning-api-svc:8888
             - name: REST_SERVICE_URL
               value: https://api.{{ .Values.deploymentname }}.{{ .Values.dnsdomain }}
             - name: LIGHTNING_SERVER_URL

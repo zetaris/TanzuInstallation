@@ -30,6 +30,8 @@ spec:
               value: jdbc:zetaris:lightning@lightning-server-svc:10000
             - name: LIGHTNING_API_DEPLOY_MODE
               value: {{ .Values.api.lightning_api_deploy_mode }}
+            - name: NDP_DRIVER_PASSWORD 
+              value: {{ .Values.ndppassword }}
             - name: ENCRYPTION_LOCAL_PRIVATE_KEY_PATH
               value: /home/zetaris/lightning/password-security/private_key.der
             - name: ENCRYPTION_LOCAL_PUBLIC_KEY_PATH
