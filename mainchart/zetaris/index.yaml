@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  zetaris:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-02-10T22:07:58.422867+05:30"
+    description: A Helm chart for Kubernetes
+    digest: f1a8597136ecee03f758f147fd0ee7789996c50a2e7af576421403dbb38484f5
+    name: zetaris
+    type: application
+    urls:
+    - https://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@raw.githubusercontent.com/zetaris/HelmDeployment/v2.3.6.0-vmware/mainchart/zetaris/zetaris-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-02-10T22:07:58.42228+05:30"
