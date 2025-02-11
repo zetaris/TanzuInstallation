@@ -1,4 +1,4 @@
-branchname="v2.3.6.0-vmware"
+branchname="v2.3.6.0-tanzu"
 ghtoken="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"
 #### Package helm charts
 helm package ./mainchart/zetaris -d ./mainchart/zetaris
