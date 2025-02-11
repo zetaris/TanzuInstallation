@@ -3,12 +3,12 @@ entries:
   zetaris:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2025-02-11T11:08:27.120604+05:30"
+    created: "2025-02-11T11:17:23.245542+05:30"
     description: A Helm chart for Kubernetes
-    digest: 159e9e2e1bc9cffda486bc055708ab2ac7e32fb06636d5e56f3c85b790149175
+    digest: 7a958a56c9cc3e7f43fde22130d7e52f076e0e4f1f8631bb3b8f3fbf5209827b
     name: zetaris
     type: application
     urls:
-    - https://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@raw.githubusercontent.com/zetaris/TanzuInstallation/v2.3.6.0-tanzu/mainchart/zetaris/zetaris-0.1.0.tgz
+    - https://raw.githubusercontent.com/zetaris/TanzuInstallation/v2.3.6.0-tanzu/mainchart/zetaris/zetaris-0.1.0.tgz
     version: 0.1.0
-generated: "2025-02-11T11:08:27.119699+05:30"
+generated: "2025-02-11T11:17:23.24418+05:30"
